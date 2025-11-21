@@ -2,6 +2,7 @@ const express = require('express');
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const crypto = require('crypto');
+const db = require('./db');
 const router = express.Router();
 
 // Import nodemailer dengan error handling
@@ -39,9 +40,7 @@ try {
     console.warn('   And configure SMTP settings in .env file');
 }
 
-// In-memory user store (replace with database in production)
-const users = new Map();
-const verificationCodes = new Map();
+// Users now stored in Supabase database via db.js
 
 // JWT Secret
 const JWT_SECRET = process.env.JWT_SECRET || 'your-secret-key-change-this-in-production';
@@ -116,7 +115,8 @@ router.post('/signup', async (req, res) => {
         }
         
         // Check if user already exists
-        if (users.has(email.toLowerCase())) {
+        const existingUser = await db.getUserByEmail(email);
+        if (existingUser) {
             return res.status(409).json({ error: 'Email already registered' });
         }
         
@@ -126,23 +126,22 @@ router.post('/signup', async (req, res) => {
         // Generate verification code
         const verificationCode = crypto.randomBytes(32).toString('hex');
         
-        // Create user
-        const user = {
-            id: crypto.randomUUID(),
+        // Create user in database
+        const user = await db.createUser({
             name,
             email: email.toLowerCase(),
             password: hashedPassword,
             role: 'bidder',
             verified: false,
-            requiresPasswordReset: false,
-            createdAt: new Date().toISOString(),
+            requires_password_reset: false,
             provider: 'local'
-        };
-        
-        users.set(email.toLowerCase(), user);
-        verificationCodes.set(verificationCode, { 
-            email: email.toLowerCase(), 
-            expiresAt: Date.now() + 24 * 60 * 60 * 1000 
+        });
+
+        // Store verification code in database
+        await db.createVerificationCode({
+            code: verificationCode,
+            email: email.toLowerCase(),
+            expires_at: new Date(Date.now() + 24 * 60 * 60 * 1000).toISOString()
         });
         
         // Send verification email
@@ -199,7 +198,7 @@ router.post('/signup', async (req, res) => {
 });
 
 // GET /api/auth/verify-email
-router.get('/verify-email', (req, res) => {
+router.get('/verify-email', async (req, res) => {
     try {
         const { code } = req.query;
         
@@ -207,26 +206,25 @@ router.get('/verify-email', (req, res) => {
             return res.status(400).send('<h1>Invalid verification link</h1>');
         }
         
-        const verification = verificationCodes.get(code);
-        
+        const verification = await db.getVerificationCode(code);
+
         if (!verification) {
             return res.status(400).send('<h1>Invalid or expired verification link</h1>');
         }
-        
-        if (Date.now() > verification.expiresAt) {
-            verificationCodes.delete(code);
+
+        if (new Date() > new Date(verification.expires_at)) {
+            await db.deleteVerificationCode(code);
             return res.status(400).send('<h1>Verification link has expired</h1>');
         }
-        
-        const user = users.get(verification.email);
-        
+
+        const user = await db.getUserByEmail(verification.email);
+
         if (!user) {
             return res.status(404).send('<h1>User not found</h1>');
         }
-        
-        user.verified = true;
-        users.set(verification.email, user);
-        verificationCodes.delete(code);
+
+        await db.updateUser(verification.email, { verified: true });
+        await db.deleteVerificationCode(code);
         
         res.send(`
             <html>
@@ -288,12 +286,12 @@ router.post('/signin', async (req, res) => {
             return res.status(400).json({ error: 'Email and password are required' });
         }
         
-        const user = users.get(email.toLowerCase());
-        
+        const user = await db.getUserByEmail(email);
+
         if (!user) {
             return res.status(401).json({ error: 'Invalid email or password' });
         }
-        
+
         if (!user.verified && user.provider === 'local') {
             return res.status(403).json({ error: 'Please verify your email before signing in' });
         }
@@ -333,18 +331,19 @@ router.post('/forgot-password', async (req, res) => {
             return res.status(400).json({ error: 'Email is required' });
         }
         
-        const user = users.get(email.toLowerCase());
-        
+        const user = await db.getUserByEmail(email);
+
         if (!user) {
             return res.json({ ok: true, message: 'If an account exists, a temporary password has been sent' });
         }
-        
+
         const tempPassword = generateTempPassword();
         const hashedTempPassword = await bcrypt.hash(tempPassword, 10);
-        
-        user.password = hashedTempPassword;
-        user.requiresPasswordReset = true;
-        users.set(email.toLowerCase(), user);
+
+        await db.updateUser(email, {
+            password: hashedTempPassword,
+            requires_password_reset: true
+        });
         
         const emailSent = await sendEmail(
             email,
@@ -407,17 +406,18 @@ router.post('/reset-password', verifyToken, async (req, res) => {
             return res.status(400).json({ error: 'Password must be at least 8 characters' });
         }
         
-        const user = users.get(req.user.email);
-        
+        const user = await db.getUserByEmail(req.user.email);
+
         if (!user) {
             return res.status(404).json({ error: 'User not found' });
         }
-        
+
         const hashedPassword = await bcrypt.hash(newPassword, 10);
-        
-        user.password = hashedPassword;
-        user.requiresPasswordReset = false;
-        users.set(req.user.email, user);
+
+        await db.updateUser(req.user.email, {
+            password: hashedPassword,
+            requires_password_reset: false
+        });
         
         res.json({ ok: true, message: 'Password updated successfully' });
         
@@ -428,16 +428,21 @@ router.post('/reset-password', verifyToken, async (req, res) => {
 });
 
 // GET /api/auth/verify
-router.get('/verify', verifyToken, (req, res) => {
-    const user = users.get(req.user.email);
-    
-    if (!user) {
-        return res.status(404).json({ error: 'User not found' });
+router.get('/verify', verifyToken, async (req, res) => {
+    try {
+        const user = await db.getUserByEmail(req.user.email);
+
+        if (!user) {
+            return res.status(404).json({ error: 'User not found' });
+        }
+
+        const { password: _, ...userWithoutPassword } = user;
+
+        res.json({ ok: true, user: userWithoutPassword });
+    } catch (error) {
+        console.error('Verify token error:', error);
+        res.status(500).json({ error: 'Internal server error' });
     }
-    
-    const { password: _, ...userWithoutPassword } = user;
-    
-    res.json({ ok: true, user: userWithoutPassword });
 });
 
 // Google OAuth routes
@@ -456,4 +461,4 @@ router.get('/google/callback', async (req, res) => {
     }
 });
 
-module.exports = { router, verifyToken, users };
+module.exports = { router, verifyToken, db };

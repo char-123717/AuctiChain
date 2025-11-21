@@ -5,7 +5,7 @@ const cors = require('cors');
 const path = require('path');
 const { ethers } = require('ethers');
 require('dotenv').config();
-const { router: authRouter, verifyToken, users } = require('./authRoutes');
+const { router: authRouter, verifyToken, db } = require('./authRoutes');
 const jwt = require('jsonwebtoken');
 
 const JWT_SECRET = process.env.JWT_SECRET || 'fallback-secret';
@@ -259,18 +259,18 @@ app.post('/api/withdrawn', (req, res) => {
 // ====================== HTML ROUTES (SEMUA FILE TETAP DI ROOT) ======================
 
 // ROOT — Kalau belum login → langsung ke signin.html
-app.get('/', (req, res) => {
+app.get('/', async (req, res) => {
   const token = req.headers.authorization?.split(' ')[1];
   if (!token) return res.redirect('/signin.html');
 
   try {
     const decoded = jwt.verify(token, JWT_SECRET);
-    const user = users.get(decoded.email);
+    const user = await db.getUserByEmail(decoded.email);
     if (user && user.verified) {
-      return res.sendFile(path.join(__dirname, 'index.html'));   // ← TETAP DI ROOT
+      return res.sendFile(path.join(__dirname, 'index.html'));
     }
     return res.redirect('/signin.html?error=unverified');
-  } catch {
+  } catch (error) {
     return res.redirect('/signin.html');
   }
 });
@@ -278,24 +278,28 @@ app.get('/', (req, res) => {
 app.get('/signin.html',  (req, res) => res.sendFile(path.join(__dirname, 'signin.html')));
 app.get('/signup.html',  (req, res) => res.sendFile(path.join(__dirname, 'signup.html')));
 app.get('/forgot.html',  (req, res) => res.sendFile(path.join(__dirname, 'forgot.html')));
-app.get('/reset.html', verifyToken, (req, res) => {
-  const user = users.get(req.user.email);
-  if (!user || !user.requiresPasswordReset) return res.redirect('/');
-  res.sendFile(path.join(__dirname, 'reset.html'));
+app.get('/reset.html', verifyToken, async (req, res) => {
+  try {
+    const user = await db.getUserByEmail(req.user.email);
+    if (!user || !user.requires_password_reset) return res.redirect('/');
+    res.sendFile(path.join(__dirname, 'reset.html'));
+  } catch (error) {
+    res.redirect('/signin.html');
+  }
 });
 
 app.get('/auction.html', verifyToken, async (req, res) => {
   try {
     const auctionId = req.query.id || '101';
     if (!contracts[auctionId]) return res.redirect('/');
-    const user = users.get(req.user.email);
+    const user = await db.getUserByEmail(req.user.email);
     if (!user || !user.verified) return res.redirect('/signin.html?error=unverified');
 
     const endTime = await contracts[auctionId].auctionEndTime();
     const now = Math.floor(Date.now() / 1000);
     if (now > endTime || auctionStates[auctionId].ended) return res.redirect('/');
 
-    res.sendFile(path.join(__dirname, 'auction.html'));   // ← TETAP DI ROOT
+    res.sendFile(path.join(__dirname, 'auction.html'));
   } catch (e) {
     console.error(e);
     res.redirect('/');
