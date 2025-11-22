@@ -1,6 +1,9 @@
 // auth.js - Client-side Authentication Handler (VERSI FINAL & ANTI KEDIP-KEDIP)
 document.addEventListener('DOMContentLoaded', () => {
-    const authMode = getAuthMode(); // 'signin', 'signup', 'forgot', 'reset'
+    const authMode = getAuthMode(); // 'signin', 'signup', 'forgot', 'reset', 'none'
+
+    // Skip jika bukan halaman auth
+    if (authMode === 'none') return;
 
     // JANGAN PERNAH redirect otomatis dari halaman login/signup/forgot
     // Biarkan server.js yang mengatur semua alur
@@ -13,7 +16,7 @@ document.addEventListener('DOMContentLoaded', () => {
         initForgotPasswordForm();
     } else if (authMode === 'reset') {
         initResetPasswordForm();
-    } else {
+    } else if (authMode === 'signin') {
         initSigninForm();
     }
 
@@ -31,7 +34,8 @@ function getAuthMode() {
     if (path.includes('signup')) return 'signup';
     if (path.includes('forgot')) return 'forgot';
     if (path.includes('reset')) return 'reset';
-    return 'signin';
+    if (path.includes('signin')) return 'signin';
+    return 'none'; // Bukan halaman auth
 }
 
 // Hanya validasi token (tidak redirect!)

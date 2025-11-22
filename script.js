@@ -1,20 +1,47 @@
 // Enhanced script.js with fixed initial load
 document.addEventListener('DOMContentLoaded', async () => {
+    // Check authentication first
+    const token = localStorage.getItem('auction_token');
+
+    if (!token) {
+        // No token, redirect to signin
+        window.location.href = '/signin.html';
+        return;
+    }
+
+    // Verify token validity
+    try {
+        const verifyResponse = await fetch('/api/auth/verify', {
+            headers: { 'Authorization': `Bearer ${token}` }
+        });
+
+        if (!verifyResponse.ok) {
+            // Invalid token, clear and redirect
+            localStorage.removeItem('auction_token');
+            localStorage.removeItem('auction_user');
+            window.location.href = '/signin.html';
+            return;
+        }
+    } catch (error) {
+        console.error('Token verification failed:', error);
+        window.location.href = '/signin.html';
+        return;
+    }
+
     const auctionCards = document.querySelectorAll('.auction-card');
     const nameModal = document.getElementById('nameModal');
     const participantNameInput = document.getElementById('participantName');
     const modalConfirmButton = document.getElementById('modalConfirmButton');
     const modalCancelButton = document.getElementById('modalCancelButton');
     const toastContainer = document.getElementById('toastContainer');
-    
+
     let selectedAuctionId = null;
     let selectedMode = null;
     const countdownStates = {};
     const backendUrl = location.origin;
-  
+
     // Initialize Socket.IO with lobby room
-    const token = localStorage.getItem('auction_token');
-    const socket = io(location.origin, { 
+    const socket = io(location.origin, {
         query: { id: 'lobby' },
         auth: { token }
     });

@@ -258,21 +258,10 @@ app.post('/api/withdrawn', (req, res) => {
 
 // ====================== HTML ROUTES (SEMUA FILE TETAP DI ROOT) ======================
 
-// ROOT — Kalau belum login → langsung ke signin.html
+// ROOT — Check token dari cookie atau langsung serve index.html (client-side akan handle auth)
 app.get('/', async (req, res) => {
-  const token = req.headers.authorization?.split(' ')[1];
-  if (!token) return res.redirect('/signin.html');
-
-  try {
-    const decoded = jwt.verify(token, JWT_SECRET);
-    const user = await db.getUserByEmail(decoded.email);
-    if (user && user.verified) {
-      return res.sendFile(path.join(__dirname, 'index.html'));
-    }
-    return res.redirect('/signin.html?error=unverified');
-  } catch (error) {
-    return res.redirect('/signin.html');
-  }
+  // Langsung serve index.html, biarkan client-side auth di script.js yang cek token
+  res.sendFile(path.join(__dirname, 'index.html'));
 });
 
 app.get('/signin.html',  (req, res) => res.sendFile(path.join(__dirname, 'signin.html')));

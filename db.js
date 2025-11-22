@@ -1,13 +1,22 @@
 const { createClient } = require('@supabase/supabase-js');
-require('dotenv').config();
 
-const supabaseUrl = process.env.SUPABASE_URL;
-const supabaseKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
+// dotenv config sudah dipanggil di server.js, tidak perlu di sini
+const supabaseUrl = process.env.SUPABASE_URL || process.env.VITE_SUPABASE_URL;
+const supabaseKey = process.env.SUPABASE_SERVICE_ROLE_KEY || process.env.VITE_SUPABASE_ANON_KEY;
 
 if (!supabaseUrl || !supabaseKey) {
   console.error('Supabase credentials missing in .env file');
+  console.error('Check environment variables:');
+  console.error('  SUPABASE_URL or VITE_SUPABASE_URL');
+  console.error('  SUPABASE_SERVICE_ROLE_KEY or VITE_SUPABASE_ANON_KEY');
+  console.error('Current values:', {
+    url: supabaseUrl ? 'set' : 'missing',
+    key: supabaseKey ? 'set' : 'missing'
+  });
   process.exit(1);
 }
+
+console.log('Supabase connected successfully:', supabaseUrl);
 
 const supabase = createClient(supabaseUrl, supabaseKey);
 
