@@ -5,7 +5,7 @@ const cors = require('cors');
 const path = require('path');
 const { ethers } = require('ethers');
 require('dotenv').config();
-const { router: authRouter, verifyToken, db } = require('./authRoutes');
+const { router: authRouter, verifyToken, db } = require('./routes/authRoutes');
 const jwt = require('jsonwebtoken');
 
 const JWT_SECRET = process.env.JWT_SECRET || 'fallback-secret';
@@ -14,23 +14,23 @@ const JWT_SECRET = process.env.JWT_SECRET || 'fallback-secret';
 const PORT = process.env.PORT || 3000;
 const RPC = process.env.SEPOLIA_RPC_URL || 'https://sepolia.infura.io/v3/7cdaf86234974d4c899f71faa758d7de';
 const WS = process.env.SEPOLIA_WS_URL || 'wss://sepolia.infura.io/ws/v3/7cdaf86234974d4c899f71faa758d7de';
-const CONTRACT_ADDRESS_101 = process.env.CONTRACT_ADDRESS_101 || '0xF4800bcC6e0690F4c7524e4347e098F618a3ff3F';
+const CONTRACT_ADDRESS_101 = process.env.CONTRACT_ADDRESS_101 || '0xdE5ea988Fa683D5Bd3da5f3566771D51E85Ca2E0';
 const CONTRACT_ADDRESS_102 = process.env.CONTRACT_ADDRESS_102 || '0x036b20234e5A20FB657fA698eB6c9853b40B2FaB';
 
 // ====================== CONTRACT ABI ======================
 const CONTRACT_ABI = [
-  {"anonymous":false,"inputs":[{"indexed":true,"internalType":"address","name":"bidder","type":"address"},{"indexed":false,"internalType":"uint256","name":"amount","type":"uint256"},{"indexed":false,"internalType":"uint256","name":"total","type":"uint256"}],"name":"BidPlaced","type":"event"},
-  {"anonymous":false,"inputs":[{"indexed":true,"internalType":"address","name":"bidder","type":"address"},{"indexed":false,"internalType":"uint256","name":"total","type":"uint256"}],"name":"NewHighBid","type":"event"},
-  {"anonymous":false,"inputs":[{"indexed":true,"internalType":"address","name":"bidder","type":"address"},{"indexed":false,"internalType":"uint256","name":"amount","type":"uint256"}],"name":"Withdrawn","type":"event"},
-  {"anonymous":false,"inputs":[{"indexed":false,"internalType":"address","name":"winner","type":"address"},{"indexed":false,"internalType":"uint256","name":"amount","type":"uint256"}],"name":"AuctionEnded","type":"event"},
-  {"inputs":[],"name":"auctionEndTime","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},
-  {"inputs":[],"name":"highestBid","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},
-  {"inputs":[],"name":"highestBidder","outputs":[{"internalType":"address","name":"","type":"address"}],"stateMutability":"view","type":"function"},
-  {"inputs":[{"internalType":"address","name":"","type":"address"}],"name":"bids","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},
-  {"inputs":[{"internalType":"uint256","name":"","type":"uint256"}],"name":"bidders","outputs":[{"internalType":"address","name":"","type":"address"}],"stateMutability":"view","type":"function"},
-  {"inputs":[],"name":"biddersCount","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},
-  {"inputs":[],"name":"bid","outputs":[],"stateMutability":"payable","type":"function"},
-  {"inputs":[],"name":"withdraw","outputs":[],"stateMutability":"nonpayable","type":"function"}
+  { "anonymous": false, "inputs": [{ "indexed": true, "internalType": "address", "name": "bidder", "type": "address" }, { "indexed": false, "internalType": "uint256", "name": "amount", "type": "uint256" }, { "indexed": false, "internalType": "uint256", "name": "total", "type": "uint256" }], "name": "BidPlaced", "type": "event" },
+  { "anonymous": false, "inputs": [{ "indexed": true, "internalType": "address", "name": "bidder", "type": "address" }, { "indexed": false, "internalType": "uint256", "name": "total", "type": "uint256" }], "name": "NewHighBid", "type": "event" },
+  { "anonymous": false, "inputs": [{ "indexed": true, "internalType": "address", "name": "bidder", "type": "address" }, { "indexed": false, "internalType": "uint256", "name": "amount", "type": "uint256" }], "name": "Withdrawn", "type": "event" },
+  { "anonymous": false, "inputs": [{ "indexed": false, "internalType": "address", "name": "winner", "type": "address" }, { "indexed": false, "internalType": "uint256", "name": "amount", "type": "uint256" }], "name": "AuctionEnded", "type": "event" },
+  { "inputs": [], "name": "auctionEndTime", "outputs": [{ "internalType": "uint256", "name": "", "type": "uint256" }], "stateMutability": "view", "type": "function" },
+  { "inputs": [], "name": "highestBid", "outputs": [{ "internalType": "uint256", "name": "", "type": "uint256" }], "stateMutability": "view", "type": "function" },
+  { "inputs": [], "name": "highestBidder", "outputs": [{ "internalType": "address", "name": "", "type": "address" }], "stateMutability": "view", "type": "function" },
+  { "inputs": [{ "internalType": "address", "name": "", "type": "address" }], "name": "bids", "outputs": [{ "internalType": "uint256", "name": "", "type": "uint256" }], "stateMutability": "view", "type": "function" },
+  { "inputs": [{ "internalType": "uint256", "name": "", "type": "uint256" }], "name": "bidders", "outputs": [{ "internalType": "address", "name": "", "type": "address" }], "stateMutability": "view", "type": "function" },
+  { "inputs": [], "name": "biddersCount", "outputs": [{ "internalType": "uint256", "name": "", "type": "uint256" }], "stateMutability": "view", "type": "function" },
+  { "inputs": [], "name": "bid", "outputs": [], "stateMutability": "payable", "type": "function" },
+  { "inputs": [], "name": "withdraw", "outputs": [], "stateMutability": "nonpayable", "type": "function" }
 ];
 
 // ====================== APP SETUP ======================
@@ -39,10 +39,10 @@ app.use(cors());
 app.use(express.json());
 
 // INI YANG PENTING: JANGAN OTOMATIS SERVE index.html
-app.use(express.static(__dirname, { index: false }));
+app.use(express.static(path.join(__dirname, '../public'), { index: false }));
 
 const server = http.createServer(app);
-const io = new Server(server, { cors: { origin: "*", methods: ["GET","POST"] } });
+const io = new Server(server, { cors: { origin: "*", methods: ["GET", "POST"] } });
 
 app.use('/api/auth', authRouter);
 
@@ -74,7 +74,7 @@ let auctionStates = {
 
 function shortAddr(a) {
   if (!a || a === ethers.constants.AddressZero) return '-';
-  return `${a.substring(0,6)}...${a.substring(a.length-4)}`;
+  return `${a.substring(0, 6)}...${a.substring(a.length - 4)}`;
 }
 
 // ====================== SYNC FROM CHAIN ======================
@@ -99,7 +99,7 @@ async function syncFromChain(auctionId) {
 
     // Build bid history
     let count = 0;
-    try { count = Number(await contracts[auctionId].biddersCount()); } catch {}
+    try { count = Number(await contracts[auctionId].biddersCount()); } catch { }
 
     const nameMap = new Map();
     io.sockets.sockets.forEach(s => {
@@ -122,7 +122,7 @@ async function syncFromChain(auctionId) {
             ts: Date.now()
           });
         }
-      } catch {}
+      } catch { }
     }
 
     if (highestBidderAddr !== '-' && highestBidValue > 0) {
@@ -138,7 +138,7 @@ async function syncFromChain(auctionId) {
     }
 
     auctionStates[auctionId].bidHistory = Array.from(map.values())
-      .sort((a,b) => (b.amount || 0) - (a.amount || 0));
+      .sort((a, b) => (b.amount || 0) - (a.amount || 0));
 
     // Broadcast
     io.to(auctionId).emit('highestBidUpdate', { auctionId, amount: highestBidValue, bidderName: highestBidderAddr });
@@ -193,7 +193,7 @@ io.on('connection', socket => {
       socket.emit('bidHistoryUpdate', auctionStates[auctionId].bidHistory);
       socket.emit('timerUpdate', {
         id: auctionId,
-        seconds: Math.max(0, auctionStates[auctionId].auctionEndTime - Math.floor(Date.now()/1000)),
+        seconds: Math.max(0, auctionStates[auctionId].auctionEndTime - Math.floor(Date.now() / 1000)),
         ended: auctionStates[auctionId].ended
       });
     }
@@ -203,7 +203,7 @@ io.on('connection', socket => {
 Object.keys(wsContracts).forEach(id => {
   const c = wsContracts[id];
   ['BidPlaced', 'NewHighBid', 'Withdrawn', 'AuctionEnded'].forEach(ev => {
-    try { c.on(ev, () => syncFromChain(id)); } catch {}
+    try { c.on(ev, () => syncFromChain(id)); } catch { }
   });
 });
 
@@ -224,7 +224,7 @@ setInterval(() => {
   });
 }, 1000);
 
-setInterval(() => Object.keys(auctionStates).forEach(id => syncFromChain(id).catch(()=>{})), 30000);
+setInterval(() => Object.keys(auctionStates).forEach(id => syncFromChain(id).catch(() => { })), 30000);
 
 // ====================== API ENDPOINTS ======================
 app.get('/api/auction-details', (req, res) => {
@@ -244,15 +244,15 @@ app.get('/api/auction-details', (req, res) => {
 app.post('/api/withdrawn', (req, res) => {
   try {
     const { walletAddress, auctionId } = req.body;
-    if (!walletAddress || !auctionId) return res.status(400).json({ ok:false });
+    if (!walletAddress || !auctionId) return res.status(400).json({ ok: false });
     const entry = auctionStates[auctionId]?.bidHistory.find(e => e.walletAddress?.toLowerCase() === walletAddress.toLowerCase());
     if (entry) entry.amount = 0;
-    auctionStates[auctionId]?.bidHistory.sort((a,b)=> (b.amount||0)-(a.amount||0));
+    auctionStates[auctionId]?.bidHistory.sort((a, b) => (b.amount || 0) - (a.amount || 0));
     io.to(auctionId).emit('bidHistoryUpdate', auctionStates[auctionId].bidHistory);
     setTimeout(() => syncFromChain(auctionId), 1500);
-    res.json({ ok:true });
+    res.json({ ok: true });
   } catch (e) {
-    res.status(500).json({ ok:false, error: e.message });
+    res.status(500).json({ ok: false, error: e.message });
   }
 });
 
@@ -261,17 +261,17 @@ app.post('/api/withdrawn', (req, res) => {
 // ROOT — Check token dari cookie atau langsung serve index.html (client-side akan handle auth)
 app.get('/', async (req, res) => {
   // Langsung serve index.html, biarkan client-side auth di script.js yang cek token
-  res.sendFile(path.join(__dirname, 'index.html'));
+  res.sendFile(path.join(__dirname, '../public/index.html'));
 });
 
-app.get('/signin.html',  (req, res) => res.sendFile(path.join(__dirname, 'signin.html')));
-app.get('/signup.html',  (req, res) => res.sendFile(path.join(__dirname, 'signup.html')));
-app.get('/forgot.html',  (req, res) => res.sendFile(path.join(__dirname, 'forgot.html')));
+app.get('/signin.html', (req, res) => res.sendFile(path.join(__dirname, '../public/signin.html')));
+app.get('/signup.html', (req, res) => res.sendFile(path.join(__dirname, '../public/signup.html')));
+app.get('/forgot.html', (req, res) => res.sendFile(path.join(__dirname, '../public/forgot.html')));
 app.get('/reset.html', verifyToken, async (req, res) => {
   try {
     const user = await db.getUserByEmail(req.user.email);
     if (!user || !user.requires_password_reset) return res.redirect('/');
-    res.sendFile(path.join(__dirname, 'reset.html'));
+    res.sendFile(path.join(__dirname, '../public/reset.html'));
   } catch (error) {
     res.redirect('/signin.html');
   }
@@ -288,7 +288,7 @@ app.get('/auction.html', verifyToken, async (req, res) => {
     const now = Math.floor(Date.now() / 1000);
     if (now > endTime || auctionStates[auctionId].ended) return res.redirect('/');
 
-    res.sendFile(path.join(__dirname, 'auction.html'));
+    res.sendFile(path.join(__dirname, '../public/auction.html'));
   } catch (e) {
     console.error(e);
     res.redirect('/');

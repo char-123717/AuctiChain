@@ -1,10 +1,11 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
   <title>Reset Password - Premium Auction Room</title>
-  <link rel="stylesheet" href="style.css">
+  <link rel="stylesheet" href="css/style.css">
   <style>
     .auth-container {
       min-height: 100vh;
@@ -176,6 +177,7 @@
     }
   </style>
 </head>
+
 <body>
   <div class="auth-container">
     <div class="auth-card">
@@ -198,15 +200,8 @@
         <div class="form-group">
           <label for="newPassword" class="form-label">New Password</label>
           <div class="password-toggle">
-            <input 
-              type="password" 
-              id="newPassword" 
-              class="form-input" 
-              placeholder="••••••••"
-              required
-              autocomplete="new-password"
-              minlength="8"
-            />
+            <input type="password" id="newPassword" class="form-input" placeholder="••••••••" required
+              autocomplete="new-password" minlength="8" />
             <button type="button" class="password-toggle-btn" id="toggleNewPassword">
               👁️
             </button>
@@ -224,14 +219,8 @@
         <div class="form-group">
           <label for="confirmPassword" class="form-label">Confirm New Password</label>
           <div class="password-toggle">
-            <input 
-              type="password" 
-              id="confirmPassword" 
-              class="form-input" 
-              placeholder="••••••••"
-              required
-              autocomplete="new-password"
-            />
+            <input type="password" id="confirmPassword" class="form-input" placeholder="••••••••" required
+              autocomplete="new-password" />
             <button type="button" class="password-toggle-btn" id="toggleConfirmPassword">
               👁️
             </button>
@@ -245,17 +234,17 @@
     </div>
   </div>
 
-  <script src="auth.js"></script>
+  <script src="js/auth.js"></script>
   <script>
     // Password toggles
-    document.getElementById('toggleNewPassword')?.addEventListener('click', function() {
+    document.getElementById('toggleNewPassword')?.addEventListener('click', function () {
       const passwordInput = document.getElementById('newPassword');
       const type = passwordInput.getAttribute('type') === 'password' ? 'text' : 'password';
       passwordInput.setAttribute('type', type);
       this.textContent = type === 'password' ? '👁️' : '🙈';
     });
 
-    document.getElementById('toggleConfirmPassword')?.addEventListener('click', function() {
+    document.getElementById('toggleConfirmPassword')?.addEventListener('click', function () {
       const passwordInput = document.getElementById('confirmPassword');
       const type = passwordInput.getAttribute('type') === 'password' ? 'text' : 'password';
       passwordInput.setAttribute('type', type);
@@ -263,4 +252,5 @@
     });
   </script>
 </body>
+
 </html>

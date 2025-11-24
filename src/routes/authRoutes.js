@@ -2,7 +2,7 @@ const express = require('express');
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const crypto = require('crypto');
-const db = require('./db');
+const db = require('../config/db');
 const router = express.Router();
 
 // Import nodemailer dengan error handling
@@ -11,7 +11,7 @@ let transporter;
 
 try {
     nodemailer = require('nodemailer');
-    
+
     // Email transporter configuration
     transporter = nodemailer.createTransport({
         host: process.env.SMTP_HOST || 'smtp.gmail.com',
@@ -50,11 +50,11 @@ const JWT_EXPIRY = '7d';
 const verifyToken = (req, res, next) => {
     const authHeader = req.headers['authorization'];
     const token = authHeader && authHeader.split(' ')[1];
-    
+
     if (!token) {
         return res.status(401).json({ error: 'Access token required' });
     }
-    
+
     jwt.verify(token, JWT_SECRET, (err, user) => {
         if (err) {
             return res.status(403).json({ error: 'Invalid or expired token' });
@@ -75,7 +75,7 @@ async function sendEmail(to, subject, html) {
         console.error('Email transporter not configured');
         return false;
     }
-    
+
     try {
         const info = await transporter.sendMail({
             from: process.env.SMTP_FROM || '"Auction Platform" <noreply@auction.com>',
@@ -95,37 +95,37 @@ async function sendEmail(to, subject, html) {
 router.post('/signup', async (req, res) => {
     try {
         const { name, email, password } = req.body;
-        
+
         // Validation
         if (!name || !email || !password) {
             return res.status(400).json({ error: 'All fields are required' });
         }
-        
+
         if (name.length < 2) {
             return res.status(400).json({ error: 'Name must be at least 2 characters' });
         }
-        
+
         if (password.length < 8) {
             return res.status(400).json({ error: 'Password must be at least 8 characters' });
         }
-        
+
         const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
         if (!emailRegex.test(email)) {
             return res.status(400).json({ error: 'Invalid email format' });
         }
-        
+
         // Check if user already exists
         const existingUser = await db.getUserByEmail(email);
         if (existingUser) {
             return res.status(409).json({ error: 'Email already registered' });
         }
-        
+
         // Hash password
         const hashedPassword = await bcrypt.hash(password, 10);
-        
+
         // Generate verification code
         const verificationCode = crypto.randomBytes(32).toString('hex');
-        
+
         // Create user in database
         const user = await db.createUser({
             name,
@@ -143,7 +143,7 @@ router.post('/signup', async (req, res) => {
             email: email.toLowerCase(),
             expires_at: new Date(Date.now() + 24 * 60 * 60 * 1000).toISOString()
         });
-        
+
         // Send verification email
         const verificationLink = `${req.protocol}://${req.get('host')}/api/auth/verify-email?code=${verificationCode}`;
         const emailSent = await sendEmail(
@@ -180,17 +180,17 @@ router.post('/signup', async (req, res) => {
             </div>
             `
         );
-        
+
         if (!emailSent) {
             console.warn('⚠️  Verification email failed to send, but user was created');
         }
-        
-        res.status(201).json({ 
-            ok: true, 
+
+        res.status(201).json({
+            ok: true,
             message: 'Account created successfully. Please check your email to verify your account.',
             emailSent
         });
-        
+
     } catch (error) {
         console.error('Signup error:', error);
         res.status(500).json({ error: 'Internal server error' });
@@ -201,11 +201,11 @@ router.post('/signup', async (req, res) => {
 router.get('/verify-email', async (req, res) => {
     try {
         const { code } = req.query;
-        
+
         if (!code) {
             return res.status(400).send('<h1>Invalid verification link</h1>');
         }
-        
+
         const verification = await db.getVerificationCode(code);
 
         if (!verification) {
@@ -225,7 +225,7 @@ router.get('/verify-email', async (req, res) => {
 
         await db.updateUser(verification.email, { verified: true });
         await db.deleteVerificationCode(code);
-        
+
         res.send(`
             <html>
                 <head>
@@ -270,7 +270,7 @@ router.get('/verify-email', async (req, res) => {
                 </body>
             </html>
         `);
-        
+
     } catch (error) {
         console.error('Email verification error:', error);
         res.status(500).send('<h1>Internal server error</h1>');
@@ -327,11 +327,11 @@ router.post('/signin', async (req, res) => {
 router.post('/forgot-password', async (req, res) => {
     try {
         const { email } = req.body;
-        
+
         if (!email) {
             return res.status(400).json({ error: 'Email is required' });
         }
-        
+
         const user = await db.getUserByEmail(email);
 
         if (!user) {
@@ -345,7 +345,7 @@ router.post('/forgot-password', async (req, res) => {
             password: hashedTempPassword,
             requires_password_reset: true
         });
-        
+
         const emailSent = await sendEmail(
             email,
             'Temporary Password - Auction Platform',
@@ -381,13 +381,13 @@ router.post('/forgot-password', async (req, res) => {
             </div>
             `
         );
-        
+
         if (!emailSent) {
             return res.status(500).json({ error: 'Failed to send email' });
         }
-        
+
         res.json({ ok: true, message: 'Temporary password sent to your email' });
-        
+
     } catch (error) {
         console.error('Forgot password error:', error);
         res.status(500).json({ error: 'Internal server error' });
@@ -398,15 +398,15 @@ router.post('/forgot-password', async (req, res) => {
 router.post('/reset-password', verifyToken, async (req, res) => {
     try {
         const { newPassword } = req.body;
-        
+
         if (!newPassword) {
             return res.status(400).json({ error: 'New password is required' });
         }
-        
+
         if (newPassword.length < 8) {
             return res.status(400).json({ error: 'Password must be at least 8 characters' });
         }
-        
+
         const user = await db.getUserByEmail(req.user.email);
 
         if (!user) {
@@ -419,9 +419,9 @@ router.post('/reset-password', verifyToken, async (req, res) => {
             password: hashedPassword,
             requires_password_reset: false
         });
-        
+
         res.json({ ok: true, message: 'Password updated successfully' });
-        
+
     } catch (error) {
         console.error('Reset password error:', error);
         res.status(500).json({ error: 'Internal server error' });

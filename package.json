@@ -2,11 +2,11 @@
   "name": "premium-auction-platform",
   "version": "2.0.0",
   "description": "Blockchain-based auction platform with complete authentication system",
-  "main": "server.js",
+  "main": "src/server.js",
   "scripts": {
-    "start": "node server.js",
-    "dev": "nodemon server.js",
-    "setup-db": "node setup-db.js",
+    "start": "node src/server.js",
+    "dev": "nodemon src/server.js",
+    "setup-db": "node scripts/setup-db.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "keywords": [

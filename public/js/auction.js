@@ -1,17 +1,17 @@
 // Enhanced auction.js with accumulated bid logic
 document.addEventListener('DOMContentLoaded', async () => {
     const contractABI = [
-      {"anonymous":false,"inputs":[{"indexed":true,"internalType":"address","name":"bidder","type":"address"},{"indexed":false,"internalType":"uint256","name":"amount","type":"uint256"},{"indexed":false,"internalType":"uint256","name":"total","type":"uint256"}],"name":"BidPlaced","type":"event"},
-      {"anonymous":false,"inputs":[{"indexed":true,"internalType":"address","name":"bidder","type":"address"},{"indexed":false,"internalType":"uint256","name":"total","type":"uint256"}],"name":"NewHighBid","type":"event"},
-      {"anonymous":false,"inputs":[{"indexed":true,"internalType":"address","name":"bidder","type":"address"},{"indexed":false,"internalType":"uint256","name":"amount","type":"uint256"}],"name":"Withdrawn","type":"event"},
-      {"inputs":[],"name":"auctionEndTime","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},
-      {"inputs":[],"name":"highestBid","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},
-      {"inputs":[],"name":"highestBidder","outputs":[{"internalType":"address","name":"","type":"address"}],"stateMutability":"view","type":"function"},
-      {"inputs":[{"internalType":"address","name":"","type":"address"}],"name":"bids","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},
-      {"inputs":[{"internalType":"uint256","name":"","type":"uint256"}],"name":"bidders","outputs":[{"internalType":"address","name":"","type":"address"}],"stateMutability":"view","type":"function"},
-      {"inputs":[],"name":"biddersCount","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},
-      {"inputs":[],"name":"bid","outputs":[],"stateMutability":"payable","type":"function"},
-      {"inputs":[],"name":"withdraw","outputs":[],"stateMutability":"nonpayable","type":"function"}
+        { "anonymous": false, "inputs": [{ "indexed": true, "internalType": "address", "name": "bidder", "type": "address" }, { "indexed": false, "internalType": "uint256", "name": "amount", "type": "uint256" }, { "indexed": false, "internalType": "uint256", "name": "total", "type": "uint256" }], "name": "BidPlaced", "type": "event" },
+        { "anonymous": false, "inputs": [{ "indexed": true, "internalType": "address", "name": "bidder", "type": "address" }, { "indexed": false, "internalType": "uint256", "name": "total", "type": "uint256" }], "name": "NewHighBid", "type": "event" },
+        { "anonymous": false, "inputs": [{ "indexed": true, "internalType": "address", "name": "bidder", "type": "address" }, { "indexed": false, "internalType": "uint256", "name": "amount", "type": "uint256" }], "name": "Withdrawn", "type": "event" },
+        { "inputs": [], "name": "auctionEndTime", "outputs": [{ "internalType": "uint256", "name": "", "type": "uint256" }], "stateMutability": "view", "type": "function" },
+        { "inputs": [], "name": "highestBid", "outputs": [{ "internalType": "uint256", "name": "", "type": "uint256" }], "stateMutability": "view", "type": "function" },
+        { "inputs": [], "name": "highestBidder", "outputs": [{ "internalType": "address", "name": "", "type": "address" }], "stateMutability": "view", "type": "function" },
+        { "inputs": [{ "internalType": "address", "name": "", "type": "address" }], "name": "bids", "outputs": [{ "internalType": "uint256", "name": "", "type": "uint256" }], "stateMutability": "view", "type": "function" },
+        { "inputs": [{ "internalType": "uint256", "name": "", "type": "uint256" }], "name": "bidders", "outputs": [{ "internalType": "address", "name": "", "type": "address" }], "stateMutability": "view", "type": "function" },
+        { "inputs": [], "name": "biddersCount", "outputs": [{ "internalType": "uint256", "name": "", "type": "uint256" }], "stateMutability": "view", "type": "function" },
+        { "inputs": [], "name": "bid", "outputs": [], "stateMutability": "payable", "type": "function" },
+        { "inputs": [], "name": "withdraw", "outputs": [], "stateMutability": "nonpayable", "type": "function" }
     ];
     const backendUrl = location.origin;
 
@@ -66,7 +66,7 @@ document.addEventListener('DOMContentLoaded', async () => {
 
     // Initialize
     if (user.name && participantInfoEl) {
-        participantInfoEl.textContent = `${user.name} (${(user.mode||'watch').toUpperCase()})`;
+        participantInfoEl.textContent = `${user.name} (${(user.mode || 'watch').toUpperCase()})`;
     }
     if (auctionTitleEl) {
         auctionTitleEl.textContent = `🏆 Bid: Item #${user.id || '—'}`;
@@ -75,11 +75,11 @@ document.addEventListener('DOMContentLoaded', async () => {
     if (user.id === '101') {
         document.getElementById('itemTitle').textContent = 'The Painting of Etherwave';
         document.getElementById('itemDescription').textContent = 'An exclusive item with high historical value. A rare opportunity to own a unique digital artwork verified on the blockchain.';
-        document.querySelector('.item-image').src = 'Images/Etherwave.png';
+        document.querySelector('.item-image').src = 'images/Etherwave.png';
     } else if (user.id === '102') {
         document.getElementById('itemTitle').textContent = 'The Statue of Satoshi Nakamoto';
         document.getElementById('itemDescription').textContent = 'Exclusive Satoshi Nakamoto statue, verified on the blockchain.';
-        document.querySelector('.item-image').src = 'Images/Satoshi.png';
+        document.querySelector('.item-image').src = 'images/Satoshi.png';
     }
 
     initSocket();
@@ -157,17 +157,17 @@ document.addEventListener('DOMContentLoaded', async () => {
                             border-radius: var(--radius-lg); 
                             border-left: 4px solid var(--success);">
                     <small style="color: var(--gray-600); margin-top: 0.5rem; display: block;">
-                        ${currentUserBid >= highestBid 
-                            ? '🎉 You are currently the leading bidder!' 
-                            : `⚡ Place a higher bid to take the lead `}
+                        ${currentUserBid >= highestBid
+                    ? '🎉 You are currently the leading bidder!'
+                    : `⚡ Place a higher bid to take the lead `}
                     </small>
                 </div>
             `;
         } else {
             statusEl.innerHTML = `
                 <div style="color: var(--gray-600);">
-                    ${hasAnyBidder 
-                        `The highest bid right now is ${formatEth(highestBid)} ETH` }
+                    ${hasAnyBidder
+                    `The highest bid right now is ${formatEth(highestBid)} ETH`}
                 </div>
             `;
         }
@@ -188,7 +188,7 @@ document.addEventListener('DOMContentLoaded', async () => {
             bidInput.addEventListener('input', () => {
                 const val = parseFloat(bidInput.value);
                 const newTotal = currentUserBid + val;
-                
+
                 if (val > 0 && newTotal > highestBid) {
                     bidInput.style.borderColor = 'var(--success)';
                     if (status) {
@@ -201,8 +201,8 @@ document.addEventListener('DOMContentLoaded', async () => {
                         const needMore = requiredMin - currentUserBid;
                         status.innerHTML = `
                             <div style="color: var(--danger);">
-                                ${val > 0 
-                                    `The highest bid right now is (${formatEth(highestBid)} ETH)`}
+                                ${val > 0
+                                `The highest bid right now is (${formatEth(highestBid)} ETH)`}
                             </div>
                         `;
                     }
@@ -288,7 +288,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     async function placeBid(bidInputEl, statusEl) {
         try {
             const val = (bidInputEl && bidInputEl.value) ? parseFloat(bidInputEl.value) : 0;
-            
+
             // Validasi input
             if (!val || val <= 0) {
                 showToast('Please enter a valid bid amount', 'error');
@@ -322,21 +322,21 @@ document.addEventListener('DOMContentLoaded', async () => {
             }
 
             const receipt = await tx.wait();
-            
+
             // Update local state
             currentUserBid = newTotalBid;
             if (newTotalBid > highestBid) {
                 highestBid = newTotalBid;
                 hasAnyBidder = true;
             }
-            
+
             hideLoading();
 
             if (statusEl) {
                 statusEl.innerHTML = '<div style="color: var(--success); font-weight: 600;">✅ Bid successfully!</div>';
             }
             bidInputEl.value = '';
-            
+
             // Update bid info display
             updateBidInfo();
 
@@ -345,7 +345,7 @@ document.addEventListener('DOMContentLoaded', async () => {
             if (confirm('Bid successful! View transaction on Etherscan?')) {
                 window.open(`https://sepolia.etherscan.io/tx/${receipt.transactionHash}`, '_blank');
             }
-            
+
             // Refresh user bid from contract
             await updateCurrentUserBid();
         } catch (e) {
@@ -368,23 +368,23 @@ document.addEventListener('DOMContentLoaded', async () => {
             }
 
             const receipt = await tx.wait();
-            
+
             // Reset current user bid
             currentUserBid = 0;
-            
+
             hideLoading();
 
             if (statusEl) {
                 statusEl.innerHTML = '<div style="color: var(--success); font-weight: 600;">✅ Withdraw successfully!</div>';
             }
-            
+
             updateBidInfo();
 
             const addr = await signer.getAddress();
             try {
                 await fetch(`${backendUrl}/api/withdrawn`, {
                     method: 'POST',
-                    headers: {'content-type': 'application/json'},
+                    headers: { 'content-type': 'application/json' },
                     body: JSON.stringify({ walletAddress: addr, auctionId: user.id })
                 });
             } catch (e) {
@@ -410,10 +410,10 @@ document.addEventListener('DOMContentLoaded', async () => {
     function initSocket() {
         const q = { id: user.id || 'unknown', name: user.name || 'Guest', mode: user.mode || 'watch' };
         const token = localStorage.getItem('auction_token');
-            socket = io(location.origin, { 
-                query: q,
-                auth: { token }
-            });
+        socket = io(location.origin, {
+            query: q,
+            auth: { token }
+        });
 
         socket.on('connect', async () => {
             console.log('socket connected');
@@ -444,7 +444,7 @@ document.addEventListener('DOMContentLoaded', async () => {
 
     function attachWalletToSocket(walletAddress) {
         if (!socket) return;
-        try { socket.disconnect(); } catch {}
+        try { socket.disconnect(); } catch { }
         const q = { id: user.id || 'unknown', name: user.name || 'Guest', mode: 'bid', walletAddress };
         socket = io(location.origin, { query: q });
         socket.on('bidHistoryUpdate', history => renderBidHistory(history));
