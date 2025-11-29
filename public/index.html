@@ -10,6 +10,7 @@
   <link rel="stylesheet" href="css/style.css">
   <style>
     /* Hero Section Styles */
+    /* Styles for the main banner area */
     .hero-section {
       text-align: center;
       padding: 3rem 0 2rem;
@@ -17,6 +18,7 @@
       position: relative;
     }
 
+    /* Logout Button Styles */
     .logout-btn {
       position: absolute;
       top: 1rem;
@@ -40,6 +42,7 @@
       background: linear-gradient(135deg, #dc2626 0%, #b91c1c 100%);
     }
 
+    /* Hero Title Styles with Gradient Text */
     .hero-title {
       font-size: 3em;
       font-weight: 800;
@@ -58,6 +61,7 @@
       font-weight: 400;
     }
 
+    /* Stats Display Styles */
     .hero-stats {
       display: flex;
       justify-content: center;
@@ -203,6 +207,7 @@
 <body>
   <div class="container">
     <!-- Hero Section -->
+    <!-- Displays the main title, subtitle, and platform statistics -->
     <section class="hero-section">
       <button class="logout-btn" onclick="logout()" aria-label="Logout">🚪 Logout</button>
       <h1 class="hero-title">🏆 Premium Auction Room</h1>
@@ -227,6 +232,7 @@
     </section>
 
     <!-- Auction List -->
+    <!-- Container for active auction cards -->
     <main id="auction-list" class="auction-list-container">
       <!-- Loading State -->
       <div class="loading-state" id="loadingState" style="display: none;">
@@ -235,6 +241,7 @@
       </div>
 
       <!-- Auction Card 1: Etherwave -->
+      <!-- Represents a single auction item with image, title, status, and actions -->
       <div class="auction-card" data-auction-id="101">
         <img src="images/Etherwave.png" alt="Etherwave Painting" class="card-img" loading="lazy">
         <div class="card-body">
@@ -277,6 +284,7 @@
       </div>
 
       <!-- Empty State (hidden by default) -->
+      <!-- Shown when there are no active auctions -->
       <div class="empty-state" id="emptyState" style="display: none;">
         <div class="empty-icon">🔭</div>
         <h3 class="empty-title">No Active Auctions</h3>
@@ -297,6 +305,7 @@
   </div>
 
   <!-- Modal for name input -->
+  <!-- Dialog to enter participant name before joining an auction -->
   <div id="nameModal" class="modal-overlay" style="display:none;" role="dialog" aria-labelledby="modalTitle"
     aria-modal="true">
     <div class="modal-content">
@@ -317,9 +326,14 @@
   <!-- Toast Container (for notifications) -->
   <div id="toastContainer" style="position: fixed; bottom: 2rem; right: 2rem; z-index: 300;"></div>
 
+  <!-- Scripts -->
+  <!-- auth.js: Handles authentication logic -->
   <script src="js/auth.js"></script>
+  <!-- ethers.js: Library for interacting with Ethereum blockchain -->
   <script src="https://unpkg.com/ethers@5.2.0/dist/ethers.umd.min.js"></script>
+  <!-- socket.io: Library for real-time communication -->
   <script src="https://cdn.socket.io/4.5.2/socket.io.min.js"></script>
+  <!-- script.js: Main dashboard logic -->
   <script src="js/script.js"></script>
 </body>
 

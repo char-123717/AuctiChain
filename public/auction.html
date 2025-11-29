@@ -330,6 +330,8 @@
     </header>
 
     <main class="auction-layout">
+      <!-- Item Details Section -->
+      <!-- Displays the image and description of the item being auctioned -->
       <section class="auction-item-panel">
         <h2 id="itemTitle">Auction Item</h2>
         <img src="images/Etherwave.png" alt="Auction Item" class="item-image" loading="lazy" width="500" height="500"
@@ -343,6 +345,8 @@
         </div>
       </section>
 
+      <!-- Bidding Panel Section -->
+      <!-- Displays the leaderboard and bidding controls -->
       <aside class="bidding-panel">
         <div class="bid-history-header">
           <div class="bid-history-title">
@@ -351,6 +355,7 @@
           </div>
         </div>
 
+        <!-- List of recent bids -->
         <ul id="bidList">
           <li class="no-bids">
             <div class="no-bids-icon">🔭</div>
@@ -358,12 +363,14 @@
           </li>
         </ul>
 
+        <!-- Container for dynamic bidding controls (Connect Wallet / Place Bid) -->
         <div id="bidActionBox" class="bid-action-box"></div>
       </aside>
     </main>
   </div>
 
   <!-- Template: Connect Wallet Panel -->
+  <!-- Shown when user is in 'bid' mode but hasn't connected wallet yet -->
   <template id="connect-wallet-panel-template">
     <div class="connect-panel">
       <h3>🔐 Connect Wallet</h3>
@@ -380,6 +387,7 @@
   </template>
 
   <!-- Template: Bidder Panel -->
+  <!-- Shown when user has connected wallet and can place bids -->
   <template id="bidder-panel-template">
     <div class="bidder-panel">
       <h3>💰 Place Your Bid</h3>
@@ -433,9 +441,14 @@
   <!-- Toast Container -->
   <div id="toastContainer"></div>
 
+  <!-- Scripts -->
+  <!-- auth.js: Handles authentication logic -->
   <script src="js/auth.js"></script>
+  <!-- ethers.js: Library for interacting with Ethereum blockchain -->
   <script src="https://unpkg.com/ethers@5.2.0/dist/ethers.umd.min.js"></script>
+  <!-- socket.io: Library for real-time communication -->
   <script src="https://cdn.socket.io/4.5.2/socket.io.min.js"></script>
+  <!-- auction.js: Handles auction logic, bidding, and updates -->
   <script src="js/auction.js"></script>
 </body>
 

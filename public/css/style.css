@@ -2,7 +2,7 @@
    MODERN PROFESSIONAL AUCTION UI
    =========================== */
 
-/* Reset dan dasar */
+/* Reset and basics */
 * {
   margin: 0;
   padding: 0;
@@ -21,7 +21,7 @@
   --danger: #ef4444;
   --warning: #f59e0b;
   --info: #3b82f6;
-  
+
   /* Neutral Colors */
   --white: #ffffff;
   --gray-50: #f9fafb;
@@ -34,14 +34,14 @@
   --gray-700: #374151;
   --gray-800: #1f2937;
   --gray-900: #111827;
-  
+
   /* Shadows */
   --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
   --shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
   --shadow-md: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
   --shadow-lg: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
   --shadow-xl: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
-  
+
   /* Spacing */
   --spacing-xs: 0.25rem;
   --spacing-sm: 0.5rem;
@@ -49,7 +49,7 @@
   --spacing-lg: 1.5rem;
   --spacing-xl: 2rem;
   --spacing-2xl: 3rem;
-  
+
   /* Border Radius */
   --radius-sm: 0.375rem;
   --radius: 0.5rem;
@@ -57,7 +57,7 @@
   --radius-lg: 1rem;
   --radius-xl: 1.5rem;
   --radius-full: 9999px;
-  
+
   /* Transitions */
   --transition-fast: 150ms cubic-bezier(0.4, 0, 0.2, 1);
   --transition: 200ms cubic-bezier(0.4, 0, 0.2, 1);
@@ -82,14 +82,14 @@ body::before {
   left: 0;
   right: 0;
   bottom: 0;
-  background: 
+  background:
     radial-gradient(circle at 20% 50%, rgba(245, 158, 11, 0.1) 0%, transparent 50%),
     radial-gradient(circle at 80% 80%, rgba(59, 130, 246, 0.1) 0%, transparent 50%);
   pointer-events: none;
   z-index: 0;
 }
 
-/* Kontainer utama */
+/* Main container */
 .container {
   max-width: 1400px;
   margin: 0 auto;
@@ -101,16 +101,19 @@ body::before {
 /* ===========================
    HEADER STYLES
    =========================== */
+/* Header: Sticky navigation bar with glassmorphism effect */
 .header {
   display: flex;
   justify-content: space-between;
   align-items: center;
   padding: var(--spacing-lg) var(--spacing-xl);
+  /* Glassmorphism effect: Semi-transparent white background with blur */
   background: rgba(255, 255, 255, 0.95);
   backdrop-filter: blur(12px);
   -webkit-backdrop-filter: blur(12px);
   box-shadow: var(--shadow-lg);
   border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+  /* Sticky positioning keeps header visible while scrolling */
   position: sticky;
   top: 0;
   z-index: 100;
@@ -118,11 +121,13 @@ body::before {
   animation: slideDown 0.4s ease-out;
 }
 
+/* Animation: Slides the element down from the top */
 @keyframes slideDown {
   from {
     transform: translateY(-100%);
     opacity: 0;
   }
+
   to {
     transform: translateY(0);
     opacity: 1;
@@ -139,7 +144,7 @@ body::before {
   letter-spacing: -0.02em;
 }
 
-.header > div {
+.header>div {
   display: flex;
   gap: var(--spacing-md);
   align-items: center;
@@ -167,11 +172,15 @@ body::before {
   box-shadow: 0 0 20px rgba(239, 68, 68, 0.3);
 }
 
+/* Animation: Creates a pulsing effect for urgent elements */
 @keyframes pulse {
-  0%, 100% {
+
+  0%,
+  100% {
     transform: scale(1);
     opacity: 1;
   }
+
   50% {
     transform: scale(1.05);
     opacity: 0.9;
@@ -202,8 +211,15 @@ body::before {
 }
 
 @keyframes fadeIn {
-  from { opacity: 0; transform: scale(0.9); }
-  to { opacity: 1; transform: scale(1); }
+  from {
+    opacity: 0;
+    transform: scale(0.9);
+  }
+
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
 }
 
 .btn-leave {
@@ -232,13 +248,16 @@ body::before {
 /* ===========================
    AUCTION LAYOUT
    =========================== */
+/* Layout: Main auction area using Flexbox for responsive alignment */
 .auction-layout {
   display: flex;
   gap: var(--spacing-2xl);
   padding: var(--spacing-2xl) 0;
   flex-wrap: wrap;
+  /* Allows wrapping on smaller screens */
 }
 
+/* Panel: Displays auction item details with glassmorphism */
 .auction-item-panel {
   flex: 1;
   min-width: 320px;
@@ -252,11 +271,13 @@ body::before {
   animation: fadeInUp 0.5s ease-out;
 }
 
+/* Animation: Fades in element while moving it up */
 @keyframes fadeInUp {
   from {
     opacity: 0;
     transform: translateY(30px);
   }
+
   to {
     opacity: 1;
     transform: translateY(0);
@@ -294,6 +315,7 @@ body::before {
 /* ===========================
    BIDDING PANEL
    =========================== */
+/* Panel: Bidding interface, fixed width on desktop */
 .bidding-panel {
   width: 420px;
   min-width: 320px;
@@ -305,6 +327,7 @@ body::before {
   box-shadow: var(--shadow-xl);
   border: 1px solid rgba(255, 255, 255, 0.3);
   animation: fadeInUp 0.5s ease-out 0.1s backwards;
+  /* Slight delay for staggered effect */
 }
 
 .bidding-panel h3 {
@@ -363,11 +386,13 @@ body::before {
   margin-bottom: var(--spacing-xs);
 }
 
+/* Animation: Slides element in from the right */
 @keyframes slideInRight {
   from {
     opacity: 0;
     transform: translateX(-20px);
   }
+
   to {
     opacity: 1;
     transform: translateX(0);
@@ -457,7 +482,8 @@ body::before {
   margin-top: var(--spacing-lg);
 }
 
-.connect-panel, .bidder-panel {
+.connect-panel,
+.bidder-panel {
   padding: var(--spacing-lg);
   background: linear-gradient(135deg, var(--gray-50) 0%, var(--white) 100%);
   border-radius: var(--radius-lg);
@@ -465,7 +491,8 @@ body::before {
   border: 2px solid var(--gray-200);
 }
 
-.connect-panel h3, .bidder-panel h3 {
+.connect-panel h3,
+.bidder-panel h3 {
   font-size: 1.2em;
   color: var(--primary);
   margin-bottom: var(--spacing-lg);
@@ -514,20 +541,22 @@ body::before {
   gap: var(--spacing-lg);
 }
 
-.bidder-panel > div {
+.bidder-panel>div {
   display: flex;
   gap: var(--spacing-md);
   flex-wrap: wrap;
 }
 
-/* FIXED: Bid Amount Input - Lebar diperbesar */
+/* FIXED: Bid Amount Input - Increased width */
 #bidAmount {
   flex: 1;
-  min-width: 200px;  /* Ubah dari 180px menjadi 200px */
+  min-width: 200px;
+  /* Changed from 180px to 200px */
   padding: var(--spacing-md) 4rem var(--spacing-md) var(--spacing-md);
   border: 2px solid var(--gray-300);
   border-radius: var(--radius-lg);
-  font-size: 1.15em;  /* Ubah dari 1.1em menjadi 1.15em */
+  font-size: 1.15em;
+  /* Changed from 1.1em to 1.15em */
   outline: none;
   transition: all var(--transition);
   background: var(--white);
@@ -562,7 +591,8 @@ body::before {
   background: linear-gradient(135deg, var(--success) 0%, #059669 100%);
   color: var(--white);
   flex: 1;
-  min-width: 120px;  /* Tambahan: min-width untuk button */
+  min-width: 120px;
+  /* Added: min-width for button */
 }
 
 #bidButton:hover:not(:disabled) {
@@ -598,9 +628,11 @@ body::before {
 /* ===========================
    AUCTION LIST (LOBBY)
    =========================== */
+/* Layout: Grid layout for the auction list (Lobby) */
 .auction-list-container {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+  /* Responsive columns */
   gap: var(--spacing-2xl);
   padding: var(--spacing-2xl) 0;
 }
@@ -615,7 +647,7 @@ body::before {
   transition: all var(--transition-slow);
   border: 1px solid rgba(255, 255, 255, 0.3);
   animation: fadeInUp 0.5s ease-out backwards;
-  width: 80%; 
+  width: 80%;
 }
 
 .auction-card:nth-child(2) {
@@ -650,7 +682,8 @@ body::before {
   letter-spacing: -0.01em;
 }
 
-.card-status-live, .card-status-soon {
+.card-status-live,
+.card-status-soon {
   font-weight: 600;
   margin-bottom: var(--spacing-lg);
   padding: var(--spacing-sm) var(--spacing-md);
@@ -664,22 +697,26 @@ body::before {
   box-shadow: var(--shadow-sm);
 }
 
-.card-status-live { 
+.card-status-live {
   background: linear-gradient(135deg, var(--success) 0%, #059669 100%);
   color: var(--white);
   animation: glow 2s ease-in-out infinite;
 }
 
+/* Animation: Creates a glowing effect for live status */
 @keyframes glow {
-  0%, 100% {
+
+  0%,
+  100% {
     box-shadow: 0 0 5px rgba(16, 185, 129, 0.5);
   }
+
   50% {
     box-shadow: 0 0 20px rgba(16, 185, 129, 0.8);
   }
 }
 
-.card-status-soon { 
+.card-status-soon {
   background: linear-gradient(135deg, var(--warning) 0%, var(--accent-dark) 100%);
   color: var(--white);
 }
@@ -715,7 +752,8 @@ body::before {
   margin-top: var(--spacing-lg);
 }
 
-.btn-join, .btn-watch {
+.btn-join,
+.btn-watch {
   flex: 1;
   padding: var(--spacing-md) var(--spacing-lg);
   border: none;
@@ -727,12 +765,12 @@ body::before {
   box-shadow: var(--shadow);
 }
 
-.btn-join { 
+.btn-join {
   background: linear-gradient(135deg, var(--accent) 0%, var(--accent-dark) 100%);
   color: var(--white);
 }
 
-.btn-join:hover:not(:disabled) { 
+.btn-join:hover:not(:disabled) {
   transform: translateY(-2px);
   box-shadow: var(--shadow-lg);
 }
@@ -744,12 +782,12 @@ body::before {
   transform: none !important;
 }
 
-.btn-watch { 
+.btn-watch {
   background: linear-gradient(135deg, var(--gray-200) 0%, var(--gray-300) 100%);
   color: var(--gray-700);
 }
 
-.btn-watch:hover:not(:disabled) { 
+.btn-watch:hover:not(:disabled) {
   background: linear-gradient(135deg, var(--gray-300) 0%, var(--gray-400) 100%);
   transform: translateY(-2px);
 }
@@ -784,11 +822,13 @@ body::before {
   border: 1px solid var(--gray-200);
 }
 
+/* Animation: Scales element in from smaller size */
 @keyframes scaleIn {
   from {
     opacity: 0;
     transform: scale(0.9);
   }
+
   to {
     opacity: 1;
     transform: scale(1);
@@ -826,7 +866,8 @@ body::before {
   justify-content: center;
 }
 
-#modalConfirmButton, #modalCancelButton {
+#modalConfirmButton,
+#modalCancelButton {
   flex: 1;
   padding: var(--spacing-md) var(--spacing-xl);
   border: none;
@@ -838,22 +879,22 @@ body::before {
   box-shadow: var(--shadow);
 }
 
-#modalConfirmButton { 
+#modalConfirmButton {
   background: linear-gradient(135deg, var(--accent) 0%, var(--accent-dark) 100%);
   color: var(--white);
 }
 
-#modalConfirmButton:hover:not(:disabled) { 
+#modalConfirmButton:hover:not(:disabled) {
   transform: translateY(-2px);
   box-shadow: var(--shadow-lg);
 }
 
-#modalCancelButton { 
+#modalCancelButton {
   background: linear-gradient(135deg, var(--gray-200) 0%, var(--gray-300) 100%);
   color: var(--gray-700);
 }
 
-#modalCancelButton:hover:not(:disabled) { 
+#modalCancelButton:hover:not(:disabled) {
   background: linear-gradient(135deg, var(--gray-300) 0%, var(--gray-400) 100%);
   transform: translateY(-2px);
 }
@@ -883,11 +924,13 @@ body::before {
   border-left-color: var(--warning);
 }
 
+/* Animation: Slides element up from bottom */
 @keyframes slideInUp {
   from {
     opacity: 0;
     transform: translateY(20px);
   }
+
   to {
     opacity: 1;
     transform: translateY(0);
@@ -907,24 +950,33 @@ body::before {
   margin: var(--spacing-lg) auto;
 }
 
+/* Animation: Rotates element 360 degrees */
 @keyframes spin {
-  0% { transform: rotate(0deg); }
-  100% { transform: rotate(360deg); }
+  0% {
+    transform: rotate(0deg);
+  }
+
+  100% {
+    transform: rotate(360deg);
+  }
 }
 
 /* ===========================
    RESPONSIVE DESIGN
    =========================== */
+/* Tablet Breakpoint: Adjusts layout for tablet screens */
 @media (max-width: 1024px) {
   .auction-layout {
     gap: var(--spacing-xl);
   }
-  
+
   .bidding-panel {
     width: 100%;
+    /* Full width on smaller screens */
   }
 }
 
+/* Mobile Breakpoint: Adjusts layout for mobile screens */
 @media (max-width: 768px) {
   :root {
     --spacing-xl: 1.5rem;
@@ -941,6 +993,7 @@ body::before {
 
   .auction-layout {
     flex-direction: column;
+    /* Stack elements vertically */
     padding: var(--spacing-lg) 0;
   }
 
@@ -959,7 +1012,7 @@ body::before {
     font-size: 1.4em;
   }
 
-  .header > div {
+  .header>div {
     width: 100%;
     justify-content: center;
   }
@@ -993,6 +1046,7 @@ body::before {
 
   .auction-list-container {
     grid-template-columns: 1fr;
+    /* Single column on mobile */
     gap: var(--spacing-lg);
     padding: var(--spacing-lg) 0;
   }
@@ -1009,7 +1063,8 @@ body::before {
     flex-direction: column;
   }
 
-  .btn-join, .btn-watch {
+  .btn-join,
+  .btn-watch {
     width: 100%;
   }
 
@@ -1043,16 +1098,18 @@ body::before {
   }
 
   /* MOBILE: Bid input full width */
-  .bidder-panel > div {
+  .bidder-panel>div {
     flex-direction: column;
   }
 
   #bidAmount {
     width: 100%;
-    min-width: 100%;  /* Full width di mobile */
+    min-width: 100%;
+    /* Full width di mobile */
   }
 
-  #bidButton, #withdrawButton {
+  #bidButton,
+  #withdrawButton {
     width: 100%;
   }
 
@@ -1064,6 +1121,7 @@ body::before {
   }
 }
 
+/* Small Mobile Breakpoint: Adjusts layout for very small screens */
 @media (max-width: 480px) {
   .header h1 {
     font-size: 1.2em;
@@ -1107,31 +1165,73 @@ body::before {
   }
 
   #bidAmount {
-    font-size: 1em;  /* Slightly smaller on very small screens */
+    font-size: 1em;
+    /* Slightly smaller on very small screens */
   }
 }
 
 /* ===========================
    UTILITY CLASSES
    =========================== */
-.text-center { text-align: center; }
-.text-left { text-align: left; }
-.text-right { text-align: right; }
+.text-center {
+  text-align: center;
+}
 
-.mt-xs { margin-top: var(--spacing-xs); }
-.mt-sm { margin-top: var(--spacing-sm); }
-.mt-md { margin-top: var(--spacing-md); }
-.mt-lg { margin-top: var(--spacing-lg); }
-.mt-xl { margin-top: var(--spacing-xl); }
+.text-left {
+  text-align: left;
+}
 
-.mb-xs { margin-bottom: var(--spacing-xs); }
-.mb-sm { margin-bottom: var(--spacing-sm); }
-.mb-md { margin-bottom: var(--spacing-md); }
-.mb-lg { margin-bottom: var(--spacing-lg); }
-.mb-xl { margin-bottom: var(--spacing-xl); }
+.text-right {
+  text-align: right;
+}
 
-.hidden { display: none; }
-.visible { display: block; }
+.mt-xs {
+  margin-top: var(--spacing-xs);
+}
+
+.mt-sm {
+  margin-top: var(--spacing-sm);
+}
+
+.mt-md {
+  margin-top: var(--spacing-md);
+}
+
+.mt-lg {
+  margin-top: var(--spacing-lg);
+}
+
+.mt-xl {
+  margin-top: var(--spacing-xl);
+}
+
+.mb-xs {
+  margin-bottom: var(--spacing-xs);
+}
+
+.mb-sm {
+  margin-bottom: var(--spacing-sm);
+}
+
+.mb-md {
+  margin-bottom: var(--spacing-md);
+}
+
+.mb-lg {
+  margin-bottom: var(--spacing-lg);
+}
+
+.mb-xl {
+  margin-bottom: var(--spacing-xl);
+}
+
+.hidden {
+  display: none;
+}
+
+.visible {
+  display: block;
+}
 
 /* ===========================
    ACCESSIBILITY

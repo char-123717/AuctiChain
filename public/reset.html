@@ -189,13 +189,17 @@
         </p>
       </div>
 
+      <!-- Alert Messages -->
       <div class="alert alert-error" id="errorMsg"></div>
       <div class="alert alert-success" id="successMsg"></div>
 
+      <!-- Warning Box -->
       <div class="warning-box">
         ⚠️ <strong>Required:</strong> You must set a new password before continuing to use the platform.
       </div>
 
+      <!-- Reset Password Form -->
+      <!-- Form to set a new password after using a temporary one -->
       <form id="resetForm">
         <div class="form-group">
           <label for="newPassword" class="form-label">New Password</label>
@@ -234,9 +238,11 @@
     </div>
   </div>
 
+  <!-- Scripts -->
+  <!-- auth.js: Handles form submission and API calls -->
   <script src="js/auth.js"></script>
   <script>
-    // Password toggles
+    // Password toggle functionality
     document.getElementById('toggleNewPassword')?.addEventListener('click', function () {
       const passwordInput = document.getElementById('newPassword');
       const type = passwordInput.getAttribute('type') === 'password' ? 'text' : 'password';

@@ -207,9 +207,12 @@
         <p class="auth-subtitle">Join the premium auction platform</p>
       </div>
 
+      <!-- Alert Messages -->
       <div class="alert alert-error" id="errorMsg"></div>
       <div class="alert alert-success" id="successMsg"></div>
 
+      <!-- Google Sign Up Button -->
+      <!-- Initiates Google OAuth flow -->
       <button type="button" class="btn-google" id="googleSignin">
         <svg width="20" height="20" viewBox="0 0 24 24">
           <path fill="#4285F4"
@@ -226,6 +229,8 @@
 
       <div class="divider"><span>or sign up with email</span></div>
 
+      <!-- Sign Up Form -->
+      <!-- Registration form with name, email, and password confirmation -->
       <form id="signupForm">
         <div class="form-group">
           <label for="name" class="form-label">Full Name</label>
@@ -272,8 +277,11 @@
     </div>
   </div>
 
+  <!-- Scripts -->
+  <!-- auth.js: Handles form submission and API calls -->
   <script src="js/auth.js"></script>
   <script>
+    // Password toggle functionality
     document.getElementById('togglePassword')?.addEventListener('click', function () {
       const input = document.getElementById('password');
       const type = input.type === 'password' ? 'text' : 'password';

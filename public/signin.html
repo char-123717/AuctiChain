@@ -257,9 +257,12 @@
         <p class="auth-subtitle">Sign in to continue bidding</p>
       </div>
 
+      <!-- Alert Messages -->
       <div class="alert alert-error" id="errorMsg"></div>
       <div class="alert alert-success" id="successMsg"></div>
 
+      <!-- Google Sign In Button -->
+      <!-- Initiates Google OAuth flow -->
       <button type="button" class="btn-google" id="googleSignin">
         <svg width="20" height="20" viewBox="0 0 24 24">
           <path fill="#4285F4"
@@ -278,6 +281,8 @@
         <span>or sign in with email</span>
       </div>
 
+      <!-- Sign In Form -->
+      <!-- Standard email/password login -->
       <form id="signinForm">
         <div class="form-group">
           <label for="email" class="form-label">Email Address</label>
@@ -311,9 +316,11 @@
     </div>
   </div>
 
+  <!-- Scripts -->
+  <!-- auth.js: Handles form submission and API calls -->
   <script src="js/auth.js"></script>
   <script>
-    // Password toggle
+    // Password toggle functionality
     document.getElementById('togglePassword')?.addEventListener('click', function () {
       const passwordInput = document.getElementById('password');
       const type = passwordInput.getAttribute('type') === 'password' ? 'text' : 'password';
