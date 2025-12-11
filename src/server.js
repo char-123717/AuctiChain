@@ -14,8 +14,8 @@ const JWT_SECRET = process.env.JWT_SECRET || 'fallback-secret';
 const PORT = process.env.PORT || 3000;
 const RPC = process.env.SEPOLIA_RPC_URL || 'https://sepolia.infura.io/v3/7cdaf86234974d4c899f71faa758d7de';
 const WS = process.env.SEPOLIA_WS_URL || 'wss://sepolia.infura.io/ws/v3/7cdaf86234974d4c899f71faa758d7de';
-const CONTRACT_ADDRESS_101 = process.env.CONTRACT_ADDRESS_101 || '0x8041C6200d49114aAd504Fe4682F2dFB6654D1A4';
-const CONTRACT_ADDRESS_102 = process.env.CONTRACT_ADDRESS_102 || '0x036b20234e5A20FB657fA698eB6c9853b40B2FaB';
+const CONTRACT_ADDRESS_101 = process.env.CONTRACT_ADDRESS_101 || '0xb65ead2310dd1b340Be8530E6160E562000A2BC2';
+const CONTRACT_ADDRESS_102 = process.env.CONTRACT_ADDRESS_102 || '0xD1F6024d26C73a0E597EBf71F209EAe029f0fcC3';
 
 // ====================== CONTRACT ABI ======================
 const CONTRACT_ABI = [
