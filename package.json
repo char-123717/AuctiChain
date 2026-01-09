@@ -2,10 +2,10 @@
   "name": "premium-auction-platform",
   "version": "2.0.0",
   "description": "Blockchain-based auction platform with complete authentication system",
-  "main": "src/server.js",
+  "main": "server/server.js",
   "scripts": {
-    "start": "node src/server.js",
-    "dev": "nodemon src/server.js",
+    "start": "node server/server.js",
+    "dev": "nodemon server/server.js",
     "setup-db": "node scripts/setup-db.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
@@ -22,12 +22,16 @@
   "license": "ISC",
   "dependencies": {
     "@supabase/supabase-js": "^2.84.0",
+    "axios": "^1.13.2",
     "bcryptjs": "^2.4.3",
     "cors": "^2.8.5",
     "dotenv": "^16.3.1",
     "ethers": "^5.7.2",
     "express": "^4.18.2",
+    "form-data": "^4.0.5",
     "jsonwebtoken": "^9.0.2",
+    "mongodb": "^7.0.0",
+    "multer": "^2.0.2",
     "nodemailer": "^7.0.10",
     "socket.io": "^4.5.4"
   },
