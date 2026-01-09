@@ -1,0 +1,290 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Dashboard - Auction Platform</title>
+    <link rel="stylesheet" href="/css/base.css">
+    <link rel="stylesheet" href="/css/admin.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+
+<body>
+    <!-- App Container - Flex Layout for Push Sidebar -->
+    <div class="app-container">
+
+        <!-- Sidebar -->
+        <aside id="sidebar" class="sidebar">
+            <div class="sidebar-header">
+                <h3><i class="fas fa-cog"></i> Admin</h3>
+            </div>
+            <div class="sidebar-menu">
+                <div class="menu-group">
+                    <a href="#" class="menu-item has-submenu active" data-tab="all">
+                        <i class="fas fa-list"></i> All Items
+                        <i class="fas fa-chevron-down submenu-arrow"></i>
+                    </a>
+                    <div class="submenu">
+                        <a href="#" class="submenu-item" data-tab="pending">
+                            <i class="fas fa-clock"></i> Pending
+                            <span class="status-count" id="pendingCount">0</span>
+                        </a>
+                        <a href="#" class="submenu-item" data-tab="approved">
+                            <i class="fas fa-check-circle"></i> Approved
+                            <span class="status-count" id="approvedCount">0</span>
+                        </a>
+                        <a href="#" class="submenu-item" data-tab="live">
+                            <i class="fas fa-broadcast-tower"></i> Live
+                            <span class="status-count live" id="liveCount">0</span>
+                        </a>
+                        <a href="#" class="submenu-item" data-tab="rejected">
+                            <i class="fas fa-times-circle"></i> Rejected
+                            <span class="status-count" id="rejectedCount">0</span>
+                        </a>
+                        <a href="#" class="submenu-item" data-tab="sold">
+                            <i class="fas fa-trophy"></i> Sold
+                            <span class="status-count sold" id="soldCount">0</span>
+                        </a>
+                        <a href="#" class="submenu-item" data-tab="unsold">
+                            <i class="fas fa-times-circle"></i> Unsold
+                            <span class="status-count unsold" id="unsoldCount">0</span>
+                        </a>
+                        <a href="#" class="submenu-item" data-tab="frozen">
+                            <i class="fas fa-snowflake"></i> Frozen
+                            <span class="status-count frozen" id="frozenCount">0</span>
+                        </a>
+                        <a href="#" class="submenu-item" data-tab="slashed">
+                            <i class="fas fa-gavel"></i> Slashed
+                            <span class="status-count slashed" id="slashedCount">0</span>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </aside>
+
+        <!-- Dashboard Content -->
+        <main class="dashboard-content">
+            <!-- Navigation -->
+            <nav class="navbar">
+                <div class="nav-brand">
+                    <button id="sidebarToggle" class="sidebar-toggle" aria-label="Toggle Sidebar">
+                        <i class="fas fa-bars"></i>
+                    </button>
+                    <span>Admin Dashboard</span>
+                </div>
+                <div class="nav-actions">
+                    <a href="/buyer/dashboard.html" class="btn-nav">
+                        <i class="fas fa-eye"></i> View Buyer Dashboard
+                    </a>
+                    <div class="nav-user">
+                        <span id="userName">Admin</span>
+                        <button id="logoutBtn" class="btn-logout">
+                            <i class="fas fa-sign-out-alt"></i> Logout
+                        </button>
+                    </div>
+                </div>
+            </nav>
+
+            <!-- Main Content -->
+            <div class="main-container">
+                <div class="section-header">
+                    <h2 id="sectionTitle">Pending Items</h2>
+                    <div class="search-box">
+                        <i class="fas fa-search"></i>
+                        <input type="text" id="searchInput" placeholder="Search items...">
+                    </div>
+                </div>
+
+                <div id="itemsList" class="items-list">
+                    <!-- Items will be loaded here -->
+                </div>
+
+                <div id="noItems" class="empty-state" style="display: none;">
+                    <i class="fas fa-inbox"></i>
+                    <p>No items found</p>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- Item Detail Modal -->
+    <div id="itemModal" class="modal" style="display: none;">
+        <div class="modal-content modal-large">
+            <div class="modal-header">
+                <h3>Item Details</h3>
+                <button class="modal-close" onclick="closeItemModal()">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div class="item-detail-layout">
+                    <!-- Image Section -->
+                    <div class="item-image-section">
+                        <img id="modalItemImage" src="" alt="Item Image">
+
+                        <!-- Sale Information (for SOLD items) - Below Image -->
+                        <div class="info-card sold-info-card" id="saleInfoCard"
+                            style="display: none; margin-top: 1rem;">
+                            <h4><i class="fas fa-trophy"></i> Sale Information</h4>
+                            <div class="info-row">
+                                <label>Winner:</label>
+                                <span id="modalWinner" class="winner-address"></span>
+                            </div>
+                            <div class="info-row">
+                                <label>Winning Bid:</label>
+                                <span id="modalWinningBid" class="winning-bid"></span>
+                            </div>
+                            <div class="info-row tx-hash-row">
+                                <label>Claim Tx Hash:</label>
+                                <a id="modalTxHash" href="#" target="_blank" class="tx-link tx-hash-value"></a>
+                            </div>
+                        </div>
+
+                        <!-- Admin Arbitration Card - Below Image -->
+                        <div class="arbitration-box" id="arbitrationCard" style="display: none;">
+                            <h4><i class="fas fa-gavel"></i> Admin Arbitration</h4>
+                            <div id="arbitrationContent">
+                                <input type="text" id="arbitrationReason" placeholder="Enter reason for action...">
+                                <div class="arbitration-buttons">
+                                    <button type="button" class="btn-arb-unfreeze" id="btnArbUnfreeze">
+                                        <i class="fas fa-fire"></i> Unfreeze
+                                    </button>
+                                    <button type="button" class="btn-arb-slash" id="btnArbSlash">
+                                        <i class="fas fa-gavel"></i> Slash Bond
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Info Section -->
+                    <div class="item-info-section">
+                        <!-- Seller Info Card - Now at the top -->
+                        <div class="info-card seller-card">
+                            <h4><i class="fas fa-user"></i> Seller Information</h4>
+                            <div class="info-row">
+                                <label>Name:</label>
+                                <span id="modalSellerName"></span>
+                            </div>
+                            <div class="info-row">
+                                <label>Email:</label>
+                                <span id="modalSellerEmail"></span>
+                            </div>
+                        </div>
+
+                        <!-- Item Info Card -->
+                        <div class="info-card">
+                            <h4><i class="fas fa-box"></i> Item Information</h4>
+                            <div class="info-row">
+                                <label>Item Name:</label>
+                                <span id="modalItemName" class="item-title"></span>
+                            </div>
+                            <div class="info-row">
+                                <label>Description:</label>
+                                <p id="modalItemDescription" class="description-text"></p>
+                            </div>
+                            <div class="info-row">
+                                <label>Starting Price:</label>
+                                <span id="modalItemPrice" class="price-value"></span>
+                            </div>
+                            <div class="info-row">
+                                <label>Status:</label>
+                                <span id="modalItemStatus" class="status-badge"></span>
+                            </div>
+                            <div class="info-row" id="modalDurationRow" style="display: none;">
+                                <label>Auction Duration:</label>
+                                <span id="modalDuration"></span>
+                            </div>
+                            <div class="info-row" id="modalBondRow" style="display: none;">
+                                <label>Bond Deposit:</label>
+                                <span id="modalBondAmount" class="price-value"></span>
+                            </div>
+                            <div class="info-row" id="rejectReasonRow" style="display: none;">
+                                <label>Reject Reason:</label>
+                                <p id="modalRejectReason" class="reject-reason-text"></p>
+                            </div>
+                            <div class="info-row" id="freezeReasonRow" style="display: none;">
+                                <label>Freeze Reason:</label>
+                                <p id="modalFreezeReason"></p>
+                            </div>
+                            <div class="info-row" id="slashReasonRow" style="display: none;">
+                                <label>Slash Reason:</label>
+                                <p id="modalSlashReason"></p>
+                            </div>
+                            <div class="info-row" id="contractAddressRow" style="display: none;">
+                                <label>Contract Address:</label>
+                                <a id="modalContractAddress" href="#" target="_blank" class="contract-link"></a>
+                            </div>
+                            <div class="info-row" id="auctionStartTimeRow" style="display: none;">
+                                <label>Auction Starts on:</label>
+                                <span id="modalAuctionStartTime"></span>
+                            </div>
+                            <div class="info-row" id="auctionEndTimeRow" style="display: none;">
+                                <label>Auction Ends on:</label>
+                                <span id="modalAuctionEndTime"></span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-actions" id="modalActions">
+                <!-- Actions will be rendered based on item status -->
+            </div>
+        </div>
+    </div>
+
+    <!-- Reject Modal -->
+    <div id="rejectModal" class="modal" style="display: none;">
+        <div class="modal-content modal-small">
+            <div class="modal-header">
+                <h3>Reject Item</h3>
+                <button class="modal-close" onclick="closeRejectModal()">&times;</button>
+            </div>
+            <form id="rejectForm">
+                <input type="hidden" id="rejectItemId">
+                <div class="form-group">
+                    <label for="rejectReason">Rejection Reason *</label>
+                    <textarea id="rejectReason" required rows="4"
+                        placeholder="Please provide a clear reason for rejection..."></textarea>
+                    <small>This reason will be sent to the seller via email.</small>
+                </div>
+                <div id="rejectError" class="error-message" style="display: none;"></div>
+                <div class="modal-actions">
+                    <button type="button" class="btn-secondary" onclick="closeRejectModal()">Cancel</button>
+                    <button type="submit" id="rejectSubmitBtn" class="btn-danger">
+                        <i class="fas fa-times"></i> Reject Item
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Freeze Modal -->
+    <div id="freezeModal" class="modal" style="display: none;">
+        <div class="modal-content modal-small">
+            <div class="modal-header freeze-header">
+                <h3><i class="fas fa-snowflake"></i> Freeze Auction</h3>
+                <button class="modal-close" onclick="closeFreezeModal()">&times;</button>
+            </div>
+            <form id="freezeForm">
+                <input type="hidden" id="freezeItemId">
+                <div class="form-group">
+                    <label for="freezeReason">Freeze Reason *</label>
+                    <textarea id="freezeReason" required rows="4"
+                        placeholder="Reason for freezing this auction (e.g., suspected manipulation)..."></textarea>
+                    <small>This will stop all bidding transaction in the auction room.</small>
+                </div>
+                <div id="freezeError" class="error-message" style="display: none;"></div>
+                <div class="modal-actions">
+                    <button type="button" class="btn-secondary" onclick="closeFreezeModal()">Cancel</button>
+                    <button type="submit" id="freezeSubmitBtn" class="btn-freeze">
+                        <i class="fas fa-snowflake"></i> Freeze Auction
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script src="/js/admin.js"></script>
+</body>
+
+</html>
