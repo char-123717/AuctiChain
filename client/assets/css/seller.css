@@ -1,0 +1,2615 @@
+/* Seller Dashboard Styles */
+
+/* =============================================
+   LOADING OVERLAY
+   ============================================= */
+
+.loading-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(15, 23, 42, 0.9);
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    z-index: 9999;
+    opacity: 0;
+    visibility: hidden;
+    transition: opacity 0.3s ease, visibility 0.3s ease;
+}
+
+.loading-overlay.active {
+    opacity: 1;
+    visibility: visible;
+}
+
+.loading-overlay .spinner {
+    width: 60px;
+    height: 60px;
+    border: 4px solid rgba(16, 185, 129, 0.2);
+    border-top-color: #10b981;
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+}
+
+.loading-overlay .loading-text {
+    margin-top: 1.5rem;
+    color: #fff;
+    font-size: 1.1rem;
+    font-weight: 500;
+    text-align: center;
+}
+
+.loading-overlay .loading-subtext {
+    margin-top: 0.5rem;
+    color: rgba(255, 255, 255, 0.6);
+    font-size: 0.9rem;
+    text-align: center;
+}
+
+@keyframes spin {
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+/* =============================================
+   APP CONTAINER - PUSH LAYOUT
+   ============================================= */
+
+.app-container {
+    display: flex;
+    min-height: 100vh;
+    width: 100%;
+    overflow-x: hidden;
+}
+
+/* =============================================
+   SIDEBAR - PUSH LAYOUT (COLLAPSIBLE)
+   ============================================= */
+
+.sidebar {
+    width: 0;
+    min-width: 0;
+    height: 100vh;
+    position: fixed;
+    top: 0;
+    left: 0;
+    background: linear-gradient(180deg, rgba(15, 23, 42, 0.98) 0%, rgba(30, 41, 59, 0.98) 100%);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border-right: 1px solid rgba(255, 255, 255, 0.1);
+    overflow-x: hidden;
+    overflow-y: auto;
+    flex-shrink: 0;
+    display: flex;
+    flex-direction: column;
+    box-shadow: 4px 0 30px rgba(0, 0, 0, 0.3);
+    transition: width 0.3s cubic-bezier(0.4, 0, 0.2, 1),
+        min-width 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    z-index: 1000;
+    scrollbar-width: thin;
+    scrollbar-color: rgba(16, 185, 129, 0.5) transparent;
+}
+
+.sidebar.open {
+    width: 250px;
+    min-width: 250px;
+}
+
+/* Webkit scrollbar styling for sidebar */
+.sidebar::-webkit-scrollbar {
+    width: 6px;
+}
+
+.sidebar::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+.sidebar::-webkit-scrollbar-thumb {
+    background: rgba(16, 185, 129, 0.5);
+    border-radius: 3px;
+}
+
+.sidebar::-webkit-scrollbar-thumb:hover {
+    background: rgba(16, 185, 129, 0.7);
+}
+
+.sidebar-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1.25rem 1.5rem;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    background: linear-gradient(135deg, rgba(16, 185, 129, 0.1) 0%, rgba(6, 182, 212, 0.1) 100%);
+    min-width: 250px;
+}
+
+.sidebar-header h3 {
+    color: #fff;
+    font-size: 1.1rem;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    background: linear-gradient(135deg, #10b981 0%, #06b6d4 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    white-space: nowrap;
+}
+
+.sidebar-menu {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    padding: 1rem;
+    padding-bottom: 2rem;
+    min-width: 250px;
+}
+
+.menu-item {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    padding: 0.875rem 1rem;
+    color: #9ca3af;
+    text-decoration: none;
+    border-radius: 10px;
+    transition: all 0.3s;
+    white-space: nowrap;
+}
+
+.menu-item:hover {
+    background: rgba(255, 255, 255, 0.05);
+    color: #fff;
+}
+
+.menu-item.active {
+    background: linear-gradient(135deg, rgba(245, 158, 11, 0.2), rgba(217, 119, 6, 0.2));
+    color: #f59e0b;
+}
+
+.menu-item i {
+    width: 20px;
+    text-align: center;
+}
+
+/* Submenu Styles */
+.menu-group {
+    display: flex;
+    flex-direction: column;
+}
+
+.menu-item.has-submenu {
+    justify-content: flex-start;
+}
+
+.menu-item .submenu-arrow {
+    margin-left: auto;
+    font-size: 0.7rem;
+    transition: transform 0.3s;
+}
+
+.menu-item.expanded .submenu-arrow {
+    transform: rotate(180deg);
+}
+
+.submenu {
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+    padding-left: 1rem;
+    margin-top: 0.25rem;
+    border-left: 2px solid rgba(245, 158, 11, 0.3);
+    margin-left: 1.5rem;
+    max-height: 0;
+    overflow: hidden;
+    transition: max-height 0.3s ease-out, opacity 0.3s ease-out;
+    opacity: 0;
+}
+
+.menu-group.submenu-open .submenu {
+    max-height: 500px;
+    opacity: 1;
+}
+
+.submenu-item {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    padding: 0.625rem 1rem;
+    color: #9ca3af;
+    text-decoration: none;
+    border-radius: 8px;
+    transition: all 0.3s;
+    white-space: nowrap;
+    font-size: 0.9rem;
+}
+
+.submenu-item:hover {
+    background: rgba(255, 255, 255, 0.05);
+    color: #fff;
+}
+
+.submenu-item.active {
+    background: rgba(245, 158, 11, 0.15);
+    color: #f59e0b;
+}
+
+.submenu-item i {
+    width: 16px;
+    text-align: center;
+    font-size: 0.85rem;
+}
+
+.status-count {
+    margin-left: auto;
+    background: rgba(255, 255, 255, 0.15);
+    color: #fff;
+    padding: 0.2rem 0.6rem;
+    border-radius: 10px;
+    font-size: 0.8rem;
+    min-width: 22px;
+    text-align: center;
+    font-weight: 700;
+}
+
+/* Pending count - bright yellow */
+.submenu-item[data-status="PENDING"] .status-count {
+    background: rgba(250, 204, 21, 0.4);
+    color: #facc15;
+}
+
+/* Approved count - bright green */
+.submenu-item[data-status="APPROVED"] .status-count {
+    background: rgba(74, 222, 128, 0.4);
+    color: #4ade80;
+}
+
+/* Rejected count - bright red */
+.submenu-item[data-status="REJECTED"] .status-count {
+    background: rgba(248, 113, 113, 0.4);
+    color: #f87171;
+}
+
+/* Unsold count - red */
+.submenu-item[data-status="UNSOLD"] .status-count {
+    background: rgba(239, 68, 68, 0.4);
+    color: #ef4444;
+}
+
+.submenu-item.active .status-count {
+    background: rgba(245, 158, 11, 0.4);
+    color: #fbbf24;
+}
+
+/* Unsold count badge in sidebar */
+.status-count.unsold {
+    background: rgba(239, 68, 68, 0.4);
+    color: #ef4444;
+}
+
+/* Frozen count badge in sidebar */
+.status-count.frozen {
+    background: rgba(59, 130, 246, 0.3);
+    color: #3b82f6;
+}
+
+/* Slashed count badge in sidebar */
+.status-count.slashed {
+    background: rgba(220, 38, 38, 0.3);
+    color: #dc2626;
+}
+
+/* =============================================
+   DASHBOARD CONTENT
+   ============================================= */
+
+.dashboard-content {
+    flex: 1;
+    min-width: 0;
+    display: flex;
+    flex-direction: column;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    margin-left: 0;
+}
+
+/* When sidebar is open, add margin to content */
+.sidebar.open ~ .dashboard-content {
+    margin-left: 250px;
+}
+
+/* Sidebar Toggle (Hamburger) Button */
+.sidebar-toggle {
+    background: transparent;
+    border: none;
+    color: #fff;
+    font-size: 1.5rem;
+    cursor: pointer;
+    padding: 0.5rem;
+    margin-right: 0.75rem;
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s ease;
+}
+
+.sidebar-toggle:hover {
+    background: rgba(255, 255, 255, 0.1);
+    color: #10b981;
+}
+
+.sidebar-toggle:active {
+    transform: scale(0.95);
+}
+
+.navbar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1rem 2rem;
+    background: linear-gradient(135deg, rgba(15, 23, 42, 0.98) 0%, rgba(30, 41, 59, 0.98) 100%);
+    border-bottom: 2px solid transparent;
+    border-image: linear-gradient(90deg, #10b981, #06b6d4, #3b82f6) 1;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    box-shadow: 0 4px 30px rgba(16, 185, 129, 0.15), 0 0 40px rgba(6, 182, 212, 0.1);
+}
+
+.nav-brand {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-family: 'Orbitron', sans-serif;
+    font-size: 1.3rem;
+    font-weight: 600;
+    background: linear-gradient(135deg, #10b981 0%, #06b6d4 50%, #3b82f6 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+}
+
+.nav-logo {
+    height: 40px;
+}
+
+.nav-user {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    color: #9ca3af;
+}
+
+.btn-back {
+    background: transparent;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    color: #fff;
+    padding: 0.5rem 1rem;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.3s;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.btn-back:hover {
+    background: rgba(59, 130, 246, 0.2);
+    border-color: #3b82f6;
+    color: #3b82f6;
+}
+
+.main-container {
+    flex: 1;
+    padding: 2rem;
+}
+
+.section-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1.5rem;
+}
+
+.section-header h2 {
+    color: #fff;
+    font-size: 1.5rem;
+    font-weight: 600;
+}
+
+.filter-group select {
+    background: rgba(255, 255, 255, 0.1);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    color: #fff;
+    padding: 0.5rem 1rem;
+    border-radius: 8px;
+    cursor: pointer;
+}
+
+.filter-group select option {
+    background: #1a2332;
+}
+
+.tab-content {
+    display: none;
+}
+
+.tab-content.active {
+    display: block;
+}
+
+.items-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 1.5rem;
+}
+
+.item-card {
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 16px;
+    overflow: hidden;
+    transition: all 0.3s;
+}
+
+.item-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
+}
+
+.item-image {
+    width: 100%;
+    height: 200px;
+    object-fit: cover;
+}
+
+.item-details {
+    padding: 1.25rem;
+}
+
+.item-name {
+    color: #fff;
+    font-family: 'Orbitron', sans-serif;
+    font-size: 1.3rem;
+    font-weight: 700;
+    margin-bottom: 0.5rem;
+    background: linear-gradient(135deg, #fff 0%, #e0e7ff 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+}
+
+.item-description {
+    color: #9ca3af;
+    font-size: 0.875rem;
+    margin-bottom: 1rem;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+}
+
+.item-price {
+    color: #f59e0b;
+    font-size: 1.125rem;
+    font-weight: 600;
+    margin-bottom: 1rem;
+}
+
+.item-status {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.375rem 0.75rem;
+    border-radius: 20px;
+    font-size: 0.75rem;
+    font-weight: 600;
+    text-transform: uppercase;
+}
+
+.status-pending {
+    background: rgba(234, 179, 8, 0.2);
+    color: #eab308;
+}
+
+.status-approved {
+    background: rgba(34, 197, 94, 0.2);
+    color: #22c55e;
+}
+
+.status-live {
+    background: linear-gradient(135deg, rgba(16, 185, 129, 0.3), rgba(34, 197, 94, 0.2));
+    color: #10b981;
+    border: 1px solid rgba(16, 185, 129, 0.4);
+    animation: pulse-live 2s ease-in-out infinite;
+}
+
+@keyframes pulse-live {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.8; }
+}
+
+.status-rejected {
+    background: rgba(239, 68, 68, 0.2);
+    color: #ef4444;
+}
+
+.status-sold {
+    background: linear-gradient(135deg, rgba(245, 158, 11, 0.3), rgba(234, 179, 8, 0.2));
+    color: #fbbf24;
+    border: 1px solid rgba(245, 158, 11, 0.4);
+}
+
+.status-ended {
+    background: rgba(107, 114, 128, 0.2);
+    color: #9ca3af;
+}
+
+.status-unsold {
+    background: rgba(239, 68, 68, 0.2);
+    color: #ef4444;
+}
+
+/* Start Auction Button */
+.btn-start-auction {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    width: 100%;
+    padding: 0.75rem 1rem;
+    background: linear-gradient(135deg, #10b981, #059669);
+    color: white;
+    border: none;
+    border-radius: 8px;
+    font-size: 0.9rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.btn-start-auction:hover {
+    background: linear-gradient(135deg, #059669, #047857);
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3);
+}
+
+.btn-start-auction:active {
+    transform: translateY(0);
+}
+
+/* Live card styling */
+.item-card.live-card {
+    border: 2px solid rgba(16, 185, 129, 0.4);
+    box-shadow: 0 0 20px rgba(16, 185, 129, 0.15);
+}
+
+/* Sold Info Section */
+.sold-info {
+    margin-top: 0.75rem;
+    padding: 1rem;
+    background: linear-gradient(135deg, rgba(245, 158, 11, 0.1), rgba(234, 179, 8, 0.05));
+    border-radius: 8px;
+    border: 1px solid rgba(245, 158, 11, 0.2);
+}
+
+.sold-info-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0.5rem 0;
+    font-size: 0.95rem;
+}
+
+.sold-info-row.winner-row {
+    justify-content: flex-start;
+    padding-top: 0;
+}
+
+.sold-info-row:not(:last-child) {
+    border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.sold-label {
+    color: #9ca3af;
+    display: flex;
+    align-items: center;
+    gap: 0.375rem;
+}
+
+.sold-label i {
+    font-size: 0.8rem;
+    color: #f59e0b;
+}
+
+.sold-value {
+    color: #fff;
+    font-weight: 600;
+}
+
+.sold-value.winner-address {
+    font-family: 'Courier New', monospace;
+    color: #60a5fa;
+    font-size: 0.85rem;
+    word-break: break-all;
+    text-align: left;
+    line-height: 1.4;
+    display: block;
+    padding: 0.5rem 0.75rem;
+    background: rgba(96, 165, 250, 0.1);
+    border-radius: 6px;
+    border: 1px solid rgba(96, 165, 250, 0.2);
+    font-weight: 600;
+}
+
+.sold-value.winning-bid {
+    color: #fbbf24;
+    font-weight: 700;
+    font-size: 1.05rem;
+}
+
+.sold-value.tx-link {
+    color: #60a5fa;
+    text-decoration: none;
+    font-family: 'Courier New', monospace;
+    font-size: 0.85rem;
+    transition: color 0.2s;
+    font-weight: 600;
+}
+
+.sold-value.tx-link:hover {
+    color: #93c5fd;
+}
+
+.sold-value.tx-link i {
+    font-size: 0.75rem;
+    margin-left: 0.25rem;
+}
+
+/* Sold count badge in sidebar */
+.status-count.sold {
+    background: linear-gradient(135deg, #f59e0b, #d97706);
+    color: #fff;
+}
+
+/* Live count badge in sidebar */
+.status-count.live {
+    background: linear-gradient(135deg, #10b981, #059669);
+    color: #fff;
+}
+
+.item-actions {
+    display: flex;
+    gap: 0.5rem;
+    margin-top: 1rem;
+    padding-top: 1rem;
+    border-top: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.btn-edit,
+.btn-view-reason,
+.btn-resubmit,
+.btn-delete {
+    flex: 1;
+    padding: 0.5rem;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 0.875rem;
+    transition: all 0.3s;
+}
+
+.btn-edit {
+    background: rgba(59, 130, 246, 0.2);
+    color: #3b82f6;
+}
+
+.btn-edit:hover {
+    background: rgba(59, 130, 246, 0.3);
+}
+
+.btn-view-reason {
+    background: rgba(239, 68, 68, 0.2);
+    color: #ef4444;
+}
+
+.btn-view-reason:hover {
+    background: rgba(239, 68, 68, 0.3);
+}
+
+.btn-resubmit {
+    background: rgba(34, 197, 94, 0.2);
+    color: #22c55e;
+}
+
+.btn-resubmit:hover {
+    background: rgba(34, 197, 94, 0.3);
+}
+
+.btn-delete {
+    background: rgba(107, 114, 128, 0.2);
+    color: #9ca3af;
+}
+
+.btn-delete:hover {
+    background: rgba(239, 68, 68, 0.3);
+    color: #ef4444;
+}
+
+/* Deploy Button */
+.btn-deploy {
+    flex: 1;
+    padding: 0.5rem;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 0.875rem;
+    transition: all 0.3s;
+    background: linear-gradient(135deg, rgba(16, 185, 129, 0.3), rgba(6, 182, 212, 0.3));
+    color: #10b981;
+    font-weight: 500;
+}
+
+.btn-deploy:hover {
+    background: linear-gradient(135deg, rgba(16, 185, 129, 0.5), rgba(6, 182, 212, 0.5));
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3);
+}
+
+.btn-deploy i {
+    margin-right: 0.5rem;
+}
+
+/* Pending Actions */
+.pending-actions {
+    display: flex;
+    gap: 0.5rem;
+    margin-top: 1rem;
+    padding-top: 1rem;
+    border-top: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+/* Deploy Modal */
+.modal-deploy {
+    max-width: 500px;
+}
+
+.deploy-info {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+}
+
+.deploy-item-preview {
+    background: rgba(255, 255, 255, 0.05);
+    border-radius: 12px;
+    padding: 1.25rem;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.deploy-item-preview h4 {
+    color: #fff;
+    font-size: 1.1rem;
+    margin-bottom: 1rem;
+}
+
+.deploy-details {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+.deploy-detail-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.deploy-detail-row label {
+    color: #9ca3af;
+    font-size: 0.875rem;
+}
+
+.deploy-detail-row span {
+    color: #10b981;
+    font-weight: 600;
+}
+
+.deploy-form-group {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+.deploy-form-group label {
+    color: #fff;
+    font-size: 0.9rem;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.deploy-form-group input {
+    padding: 0.875rem 1rem;
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 10px;
+    color: #fff;
+    font-size: 1rem;
+    transition: all 0.3s;
+}
+
+.deploy-form-group input:focus {
+    outline: none;
+    border-color: #10b981;
+    box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.1);
+}
+
+.form-hint {
+    display: block;
+    color: #10b981;
+    font-size: 0.75rem;
+    margin-top: 0.5rem;
+    line-height: 1.4;
+    padding: 0.5rem 0.75rem;
+    background: rgba(16, 185, 129, 0.15);
+    border: 1px solid rgba(16, 185, 129, 0.4);
+    border-radius: 6px;
+}
+
+.deploy-form-group .form-hint {
+    color: #6b7280;
+    font-size: 0.8rem;
+}
+
+.deploy-notice {
+    display: flex;
+    gap: 0.75rem;
+    padding: 1rem;
+    background: rgba(59, 130, 246, 0.1);
+    border: 1px solid rgba(59, 130, 246, 0.2);
+    border-radius: 10px;
+}
+
+.deploy-notice i {
+    color: #3b82f6;
+    font-size: 1.1rem;
+    flex-shrink: 0;
+    margin-top: 0.1rem;
+}
+
+.deploy-notice p {
+    color: #9ca3af;
+    font-size: 0.85rem;
+    line-height: 1.5;
+    margin: 0;
+}
+
+/* Status badge for DEPLOYED */
+.status-deployed {
+    background: linear-gradient(135deg, rgba(16, 185, 129, 0.2), rgba(6, 182, 212, 0.2));
+    color: #10b981;
+}
+
+.empty-state {
+    text-align: center;
+    padding: 4rem 2rem;
+    color: #9ca3af;
+}
+
+.empty-state i {
+    font-size: 4rem;
+    margin-bottom: 1rem;
+    opacity: 0.5;
+}
+
+.upload-form {
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 16px;
+    padding: 2rem;
+}
+
+.upload-form-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 2rem;
+    max-width: 1000px;
+}
+
+.upload-form-left,
+.upload-form-right {
+    display: flex;
+    flex-direction: column;
+}
+
+@media (max-width: 900px) {
+    .upload-form-grid {
+        grid-template-columns: 1fr;
+        max-width: 600px;
+    }
+}
+
+.form-group {
+    margin-bottom: 1.5rem;
+}
+
+.form-group label {
+    display: block;
+    color: #fff;
+    margin-bottom: 0.5rem;
+    font-weight: 500;
+}
+
+.form-group input[type="text"],
+.form-group input[type="number"],
+.form-group textarea {
+    width: 100%;
+    background: rgba(255, 255, 255, 0.1);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    color: #fff;
+    padding: 0.875rem 1rem;
+    border-radius: 10px;
+    font-size: 1rem;
+    transition: all 0.3s;
+}
+
+.form-group input:focus,
+.form-group textarea:focus {
+    outline: none;
+    border-color: #f59e0b;
+    box-shadow: 0 0 0 3px rgba(245, 158, 11, 0.1);
+}
+
+.form-group textarea {
+    resize: vertical;
+    min-height: 100px;
+}
+
+.image-upload-area {
+    border: 2px dashed rgba(255, 255, 255, 0.2);
+    border-radius: 12px;
+    padding: 2rem;
+    text-align: center;
+    cursor: pointer;
+    transition: all 0.3s;
+}
+
+.image-upload-area:hover {
+    border-color: #f59e0b;
+    background: rgba(245, 158, 11, 0.05);
+}
+
+.image-upload-area.dragover {
+    border-color: #f59e0b;
+    background: rgba(245, 158, 11, 0.1);
+}
+
+.upload-placeholder i {
+    font-size: 3rem;
+    color: #9ca3af;
+    margin-bottom: 1rem;
+}
+
+.upload-placeholder p {
+    color: #fff;
+    margin-bottom: 0.5rem;
+}
+
+.upload-placeholder span {
+    color: #6b7280;
+    font-size: 0.875rem;
+}
+
+.image-preview {
+    max-width: 100%;
+    max-height: 300px;
+    border-radius: 8px;
+}
+
+.btn-primary {
+    background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
+    color: #fff;
+    border: none;
+    padding: 0.875rem 1.5rem;
+    border-radius: 10px;
+    font-size: 1rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+}
+
+.btn-primary:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 20px rgba(245, 158, 11, 0.4);
+}
+
+.btn-primary:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+    transform: none;
+}
+
+.btn-full {
+    width: 100%;
+}
+
+.btn-secondary {
+    background: rgba(255, 255, 255, 0.1);
+    color: #fff;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    padding: 0.875rem 1.5rem;
+    border-radius: 10px;
+    font-size: 1rem;
+    cursor: pointer;
+    transition: all 0.3s;
+}
+
+.btn-secondary:hover {
+    background: rgba(255, 255, 255, 0.15);
+}
+
+.error-message {
+    background: rgba(239, 68, 68, 0.1);
+    border: 1px solid rgba(239, 68, 68, 0.3);
+    color: #ef4444;
+    padding: 0.875rem 1rem;
+    border-radius: 8px;
+    margin-bottom: 1rem;
+}
+
+.success-message {
+    background: rgba(34, 197, 94, 0.1);
+    border: 1px solid rgba(34, 197, 94, 0.3);
+    color: #22c55e;
+    padding: 0.875rem 1rem;
+    border-radius: 8px;
+    margin-bottom: 1rem;
+}
+
+.modal {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.7);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 1000;
+    padding: 1rem;
+}
+
+.modal-content {
+    background: #1a2332;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 16px;
+    width: 100%;
+    max-width: 500px;
+    max-height: 90vh;
+    overflow-y: auto;
+}
+
+.modal-small {
+    max-width: 400px;
+}
+
+.modal-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1.25rem 1.5rem;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.modal-header h3 {
+    color: #fff;
+    font-size: 1.25rem;
+}
+
+.modal-close {
+    background: none;
+    border: none;
+    color: #9ca3af;
+    font-size: 1.5rem;
+    cursor: pointer;
+    padding: 0;
+    line-height: 1;
+}
+
+.modal-close:hover {
+    color: #fff;
+}
+
+.modal-content form {
+    padding: 1.5rem;
+}
+
+.modal-actions {
+    display: flex;
+    gap: 1rem;
+    justify-content: flex-end;
+    padding: 1rem 1.5rem;
+    border-top: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.current-image {
+    max-width: 100%;
+    max-height: 150px;
+    border-radius: 8px;
+}
+
+.rejection-content {
+    padding: 1.5rem;
+    color: #9ca3af;
+}
+
+.rejection-content p {
+    background: rgba(239, 68, 68, 0.1);
+    border-left: 3px solid #ef4444;
+    padding: 1rem;
+    border-radius: 0 8px 8px 0;
+}
+
+@media (max-width: 768px) {
+    .sidebar {
+        display: none;
+    }
+
+    .main-content {
+        margin-left: 0;
+    }
+
+    .items-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .navbar {
+        padding: 1rem;
+    }
+
+    .nav-brand span {
+        display: none;
+    }
+}
+
+
+/* Rejection Modal Styles */
+.modal-rejection {
+    max-width: 500px;
+}
+
+.rejection-header {
+    background: linear-gradient(135deg, rgba(239, 68, 68, 0.2), rgba(220, 38, 38, 0.2));
+    border-bottom: 1px solid rgba(239, 68, 68, 0.3);
+}
+
+.rejection-header h3 {
+    color: #ef4444;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.rejected-item-preview {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    padding: 1rem;
+    background: rgba(255, 255, 255, 0.05);
+    border-radius: 10px;
+    margin-bottom: 1rem;
+}
+
+.rejected-item-preview img {
+    width: 80px;
+    height: 80px;
+    object-fit: cover;
+    border-radius: 8px;
+}
+
+.rejected-item-preview h4 {
+    color: #fff;
+    font-size: 1.1rem;
+}
+
+.rejection-reason-box {
+    background: rgba(239, 68, 68, 0.1);
+    border: 1px solid rgba(239, 68, 68, 0.3);
+    border-left: 4px solid #ef4444;
+    border-radius: 0 10px 10px 0;
+    padding: 1rem;
+    margin-bottom: 1rem;
+}
+
+.rejection-reason-box label {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    color: #fca5a5;
+    font-size: 0.85rem;
+    margin-bottom: 0.5rem;
+}
+
+.rejection-reason-box p {
+    color: #fff;
+    line-height: 1.6;
+    margin: 0;
+}
+
+.rejection-help {
+    display: flex;
+    align-items: flex-start;
+    gap: 0.5rem;
+    padding: 0.75rem;
+    background: rgba(59, 130, 246, 0.1);
+    border-radius: 8px;
+    color: #93c5fd;
+    font-size: 0.85rem;
+}
+
+.rejection-help i {
+    margin-top: 2px;
+}
+
+.rejected-actions .btn-view-reason {
+    background: rgba(239, 68, 68, 0.2);
+    color: #ef4444;
+    width: 100%;
+}
+
+.rejected-actions .btn-view-reason:hover {
+    background: rgba(239, 68, 68, 0.3);
+}
+
+
+/* Resubmit Banner Styles */
+.resubmit-banner {
+    background: linear-gradient(135deg, rgba(239, 68, 68, 0.15), rgba(220, 38, 38, 0.1));
+    border: 1px solid rgba(239, 68, 68, 0.3);
+    border-left: 4px solid #ef4444;
+    border-radius: 0 12px 12px 0;
+    padding: 1rem 1.25rem;
+    margin-bottom: 1.5rem;
+    max-width: 600px;
+}
+
+.resubmit-banner-header {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    color: #fca5a5;
+    font-weight: 500;
+    margin-bottom: 0.75rem;
+}
+
+.resubmit-banner-header i {
+    color: #ef4444;
+}
+
+.resubmit-reason {
+    background: rgba(0, 0, 0, 0.2);
+    border-radius: 8px;
+    padding: 0.75rem 1rem;
+}
+
+.resubmit-reason strong {
+    color: #f87171;
+    font-size: 0.85rem;
+    display: block;
+    margin-bottom: 0.25rem;
+}
+
+.resubmit-reason p {
+    color: #fff;
+    margin: 0;
+    line-height: 1.5;
+}
+
+
+/* Address Note Styling */
+.address-note {
+    display: flex;
+    align-items: flex-start;
+    gap: 0.75rem;
+    margin-top: 0.5rem;
+    padding: 0.75rem 1rem;
+    background: rgba(245, 158, 11, 0.1);
+    border: 1px solid rgba(245, 158, 11, 0.3);
+    border-radius: 8px;
+    font-size: 0.85rem;
+    color: #fbbf24;
+}
+
+.address-note i {
+    color: #f59e0b;
+    font-size: 1rem;
+    margin-top: 2px;
+}
+
+.address-note .warning-text {
+    color: #fbbf24;
+    font-size: 0.8rem;
+    font-weight: 500;
+}
+
+
+/* Item Detail Modal Styles */
+.modal-large {
+    max-width: 800px;
+}
+
+.modal-body {
+    padding: 1.5rem;
+}
+
+.item-detail-layout {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 2rem;
+}
+
+.item-image-section img {
+    width: 100%;
+    max-height: 400px;
+    object-fit: contain;
+    border-radius: 12px;
+    background: rgba(0, 0, 0, 0.2);
+}
+
+/* Auction Info Card - Below Image */
+.auction-info-card {
+    margin-top: 1rem;
+    background: linear-gradient(135deg, rgba(139, 92, 246, 0.15), rgba(168, 85, 247, 0.08));
+    border: 1px solid rgba(139, 92, 246, 0.3);
+    border-radius: 12px;
+    padding: 1rem;
+}
+
+.auction-info-card h5 {
+    color: #a78bfa;
+    font-size: 1.125rem;
+    font-weight: 600;
+    margin-bottom: 0.75rem;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.auction-info-card h5 i {
+    color: #a78bfa;
+}
+
+.auction-info-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 0.75rem;
+}
+
+.auction-info-item {
+    background: rgba(0, 0, 0, 0.2);
+    border-radius: 8px;
+    padding: 0.75rem;
+    text-align: center;
+}
+
+.auction-info-item label {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.4rem;
+    color: #94a3b8;
+    font-size: 1.125rem;
+    font-weight: 500;
+    margin-bottom: 0.35rem;
+    letter-spacing: 0.5px;
+}
+
+.auction-info-item label i {
+    font-size: 0.7rem;
+    color: #a78bfa;
+}
+
+.auction-info-item span {
+    display: block;
+    color: #fff;
+    font-size: 1rem;
+    font-weight: 600;
+}
+
+.auction-info-item .bond-value {
+    color: #fbbf24;
+}
+
+.auction-info-item.contract-item {
+    grid-column: 1 / -1;
+    margin-top: 0.5rem;
+    text-align: left;
+}
+
+.auction-info-item.contract-item label {
+    justify-content: flex-start;
+}
+
+.auction-info-item.contract-item .contract-link {
+    color: #60a5fa;
+    text-decoration: none;
+    font-family: 'Courier New', monospace;
+    font-size: 1rem;
+    word-break: break-all;
+    line-height: 1.4;
+    display: block;
+}
+
+.auction-info-item.contract-item .contract-link:hover {
+    color: #93c5fd;
+    text-decoration: underline;
+}
+
+/* Refund TX Item - Below Contract */
+.auction-info-item.refund-item {
+    grid-column: 1 / -1;
+    margin-top: 0.5rem;
+    text-align: left;
+}
+
+.auction-info-item.refund-item label {
+    justify-content: flex-start;
+    color: #f59e0b;
+}
+
+.auction-info-item.refund-item .refund-tx-link {
+    color: #60a5fa;
+    text-decoration: none;
+    font-family: 'Courier New', monospace;
+    font-size: 0.85rem;
+    word-break: break-all;
+    line-height: 1.4;
+    display: block;
+}
+
+.auction-info-item.refund-item .refund-tx-link:hover {
+    color: #93c5fd;
+    text-decoration: underline;
+}
+
+/* Sold Info Card - Below Image */
+.sold-info-card {
+    margin-top: 1rem;
+    background: linear-gradient(135deg, rgba(245, 158, 11, 0.15), rgba(234, 179, 8, 0.08));
+    border: 1px solid rgba(245, 158, 11, 0.3);
+    border-radius: 12px;
+    padding: 1rem;
+}
+
+.sold-info-card h5 {
+    color: #fbbf24;
+    font-size: 1.125rem;
+    font-weight: 600;
+    margin-bottom: 0.75rem;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.sold-info-card h5 i {
+    color: #fbbf24;
+}
+
+.item-info-section {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+}
+
+.info-card {
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 12px;
+    padding: 1.25rem;
+}
+
+.info-card h4 {
+    color: #fff;
+    font-size: 1.125rem;
+    font-weight: 600;
+    margin-bottom: 1rem;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.info-card h4 i {
+    color: #f59e0b;
+}
+
+.info-row {
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+    margin-bottom: 0.75rem;
+}
+
+.info-row:last-child {
+    margin-bottom: 0;
+}
+
+.info-row label {
+    color: #fff;
+    font-size: 1.125rem;
+    font-weight: 600;
+}
+
+.info-row span,
+.info-row p {
+    color: #fff;
+    font-size: 1rem;
+    font-weight: 600;
+}
+
+.info-row .item-title {
+    font-size: 1rem;
+    font-weight: 600;
+}
+
+.info-row .price-value {
+    color: #fbbf24;
+    font-weight: 600;
+    font-size: 1rem;
+}
+
+.info-row .address-value {
+    font-family: 'Courier New', monospace;
+    font-size: 1rem;
+    word-break: break-all;
+    text-align: left;
+    line-height: 1.4;
+    color: #60a5fa;
+    font-weight: 600;
+}
+
+.info-row .description-text {
+    line-height: 1.5;
+    color: #fff;
+    font-weight: 600;
+    font-size: 1rem;
+}
+
+.info-row .reject-reason-text {
+    color: #fca5a5;
+    background: rgba(239, 68, 68, 0.1);
+    padding: 0.75rem;
+    border-radius: 8px;
+    border-left: 3px solid #ef4444;
+    font-size: 1rem;
+}
+
+.info-row .contract-link {
+    color: #60a5fa;
+    text-decoration: none;
+    font-family: 'Courier New', monospace;
+    font-size: 1rem;
+    word-break: break-all;
+    text-align: left;
+    line-height: 1.4;
+    display: block;
+    font-weight: 600;
+}
+
+.info-row .contract-link:hover {
+    color: #93c5fd;
+    text-decoration: underline;
+}
+
+.item-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 10px 40px rgba(245, 158, 11, 0.2);
+    border-color: rgba(245, 158, 11, 0.3);
+}
+
+@media (max-width: 768px) {
+    .item-detail-layout {
+        grid-template-columns: 1fr;
+    }
+
+    .modal-large {
+        max-width: 95%;
+    }
+}
+
+
+/* Sold Detail Section in Modal */
+.sold-detail-section {
+    background: linear-gradient(135deg, rgba(245, 158, 11, 0.1), rgba(234, 179, 8, 0.05));
+    border: 1px solid rgba(245, 158, 11, 0.3);
+    border-radius: 12px;
+    padding: 1rem;
+    margin-top: 1rem;
+}
+
+.sold-detail-section h5 {
+    color: #fbbf24;
+    font-size: 1.125rem;
+    font-weight: 600;
+    margin-bottom: 1rem;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.sold-detail-section h5 i {
+    color: #f59e0b;
+}
+
+.sold-detail-section label {
+    color: #fff;
+    font-size: 1.125rem;
+    font-weight: 600;
+}
+
+.sold-detail-section span {
+    font-size: 1rem;
+    font-weight: 600;
+}
+
+/* Sold Detail Grid Layout */
+.sold-detail-grid {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+}
+
+.sold-detail-item {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+.sold-detail-item label {
+    color: #94a3b8;
+    font-size: 1.125rem;
+    font-weight: 500;
+}
+
+.sold-detail-item .winner-address {
+    font-family: 'Courier New', monospace;
+    color: #60a5fa;
+    font-size: 1rem;
+    word-break: break-all;
+    text-align: left;
+    line-height: 1.4;
+    font-weight: 600;
+    display: block;
+}
+
+.sold-detail-item .winning-bid {
+    color: #fbbf24;
+    font-weight: 600;
+    font-size: 1.1rem;
+}
+
+.sold-detail-item .contract-link,
+.sold-detail-item .tx-link {
+    color: #60a5fa;
+    text-decoration: none;
+    font-family: 'Courier New', monospace;
+    font-size: 1rem;
+    word-break: break-all;
+    text-align: left;
+    line-height: 1.4;
+    transition: color 0.2s;
+    font-weight: 600;
+    display: block;
+}
+
+.sold-detail-item .contract-link:hover,
+.sold-detail-item .tx-link:hover {
+    color: #93c5fd;
+    text-decoration: underline;
+}
+
+/* Legacy sold-detail-row styles (keep for backward compatibility) */
+.sold-detail-row {
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+    padding: 0.5rem 0;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.sold-detail-row:last-child {
+    border-bottom: none;
+}
+
+.sold-detail-row label {
+    color: #fff;
+    font-size: 1.125rem;
+    font-weight: 600;
+}
+
+.sold-detail-row .winner-address {
+    font-family: 'Courier New', monospace;
+    color: #60a5fa;
+    font-size: 1rem;
+    word-break: break-all;
+    text-align: left;
+    line-height: 1.4;
+    font-weight: 600;
+}
+
+.sold-detail-row .winning-bid {
+    color: #fbbf24;
+    font-weight: 600;
+    font-size: 1rem;
+}
+
+.sold-detail-row .tx-link {
+    color: #60a5fa;
+    text-decoration: none;
+    font-family: 'Courier New', monospace;
+    font-size: 1rem;
+    word-break: break-all;
+    text-align: left;
+    line-height: 1.4;
+    transition: color 0.2s;
+    font-weight: 600;
+}
+
+.sold-detail-row .tx-link:hover {
+    color: #93c5fd;
+    text-decoration: underline;
+}
+
+/* Sold Card - Compact Styling */
+.item-card.sold-card {
+    height: auto;
+}
+
+.item-card.sold-card .item-details {
+    padding: 1rem;
+}
+
+/* Sold Hint - "Click for details" message */
+.sold-hint {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    margin-top: 0.75rem;
+    padding: 0.75rem;
+    background: rgba(245, 158, 11, 0.1);
+    border: 1px dashed rgba(245, 158, 11, 0.3);
+    border-radius: 8px;
+    color: #fbbf24;
+    font-size: 0.8rem;
+    font-style: italic;
+}
+
+.sold-hint i {
+    color: #f59e0b;
+}
+
+/* Card Hint - "Click for details" message for all cards */
+.card-hint {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    margin-top: 0.75rem;
+    padding: 0.75rem;
+    background: rgba(107, 114, 128, 0.1);
+    border: 1px dashed rgba(107, 114, 128, 0.3);
+    border-radius: 8px;
+    color: #9ca3af;
+    font-size: 0.8rem;
+    font-style: italic;
+}
+
+.card-hint i {
+    color: #6b7280;
+}
+
+/* Item Card Height - Fit Content */
+.item-card {
+    height: auto;
+}
+
+
+/* =============================================
+   METAMASK WALLET CONNECTION STYLES
+   ============================================= */
+
+.wallet-connection-section {
+    background: linear-gradient(135deg, rgba(99, 102, 241, 0.1), rgba(139, 92, 246, 0.1));
+    border: 1px solid rgba(99, 102, 241, 0.3);
+    border-radius: 12px;
+    padding: 1.25rem;
+    margin-bottom: 1.5rem;
+}
+
+.wallet-header {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    color: #a5b4fc;
+    font-weight: 600;
+    font-size: 1rem;
+    margin-bottom: 1rem;
+}
+
+.wallet-header i {
+    font-size: 1.25rem;
+    color: #818cf8;
+}
+
+.wallet-status {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+}
+
+.wallet-hint {
+    color: #9ca3af;
+    font-size: 0.875rem;
+    margin: 0;
+}
+
+.btn-metamask {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.75rem;
+    background: linear-gradient(135deg, #f6851b 0%, #e2761b 100%);
+    color: #fff;
+    border: none;
+    padding: 0.875rem 1.5rem;
+    border-radius: 10px;
+    font-size: 1rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s;
+    width: fit-content;
+}
+
+.btn-metamask:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 20px rgba(246, 133, 27, 0.4);
+}
+
+.btn-metamask:active {
+    transform: translateY(0);
+}
+
+.metamask-icon {
+    width: 24px;
+    height: 24px;
+}
+
+.wallet-info {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+.wallet-address-display {
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+}
+
+.wallet-address-display label {
+    color: #9ca3af;
+    font-size: 0.8rem;
+}
+
+.wallet-address {
+    font-family: 'Courier New', monospace;
+    color: #60a5fa;
+    font-size: 1rem;
+    font-weight: 600;
+    background: rgba(96, 165, 250, 0.1);
+    padding: 0.5rem 0.75rem;
+    border-radius: 6px;
+    border: 1px solid rgba(96, 165, 250, 0.2);
+}
+
+.wallet-network {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.network-badge {
+    display: inline-flex;
+    align-items: center;
+    padding: 0.25rem 0.75rem;
+    border-radius: 20px;
+    font-size: 0.75rem;
+    font-weight: 600;
+    text-transform: uppercase;
+}
+
+.network-badge.network-sepolia {
+    background: rgba(34, 197, 94, 0.2);
+    color: #22c55e;
+    border: 1px solid rgba(34, 197, 94, 0.3);
+}
+
+.network-badge.network-wrong {
+    background: rgba(239, 68, 68, 0.2);
+    color: #ef4444;
+    border: 1px solid rgba(239, 68, 68, 0.3);
+}
+
+.btn-disconnect {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    background: rgba(239, 68, 68, 0.1);
+    color: #f87171;
+    border: 1px solid rgba(239, 68, 68, 0.3);
+    padding: 0.5rem 1rem;
+    border-radius: 8px;
+    font-size: 0.875rem;
+    cursor: pointer;
+    transition: all 0.3s;
+    width: fit-content;
+}
+
+.btn-disconnect:hover {
+    background: rgba(239, 68, 68, 0.2);
+    border-color: rgba(239, 68, 68, 0.5);
+}
+
+.wallet-error {
+    background: rgba(239, 68, 68, 0.1);
+    border: 1px solid rgba(239, 68, 68, 0.3);
+    color: #ef4444;
+    padding: 0.75rem 1rem;
+    border-radius: 8px;
+    font-size: 0.875rem;
+}
+
+/* Deposit Note Styling */
+.deposit-note {
+    display: flex;
+    align-items: flex-start;
+    gap: 0.75rem;
+    margin-top: 0.5rem;
+    padding: 0.75rem 1rem;
+    background: rgba(99, 102, 241, 0.1);
+    border: 1px solid rgba(99, 102, 241, 0.3);
+    border-radius: 8px;
+    font-size: 0.85rem;
+    color: #a5b4fc;
+}
+
+.deposit-note i {
+    color: #818cf8;
+    font-size: 1rem;
+    margin-top: 2px;
+}
+
+.deposit-note .info-text {
+    color: #a5b4fc;
+    font-size: 0.8rem;
+}
+
+#depositAmount {
+    font-family: 'Courier New', monospace;
+    letter-spacing: 0.5px;
+}
+
+
+/* =============================================
+   BOND STATUS BADGE STYLES
+   ============================================= */
+
+.bond-status-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    padding: 0.4rem 0.75rem;
+    border-radius: 8px;
+    font-size: 0.8rem;
+    font-weight: 600;
+    margin-top: 0.5rem;
+}
+
+.bond-status-badge.deposited {
+    background: rgba(34, 197, 94, 0.15);
+    color: #22c55e;
+    border: 1px solid rgba(34, 197, 94, 0.3);
+}
+
+.bond-status-badge.frozen {
+    background: rgba(59, 130, 246, 0.15);
+    color: #60a5fa;
+    border: 1px solid rgba(59, 130, 246, 0.3);
+}
+
+.bond-status-badge.slashed {
+    background: rgba(239, 68, 68, 0.15);
+    color: #ef4444;
+    border: 1px solid rgba(239, 68, 68, 0.3);
+}
+
+/* Frozen Item Card */
+.item-card.frozen-card {
+    border-color: rgba(59, 130, 246, 0.3);
+}
+
+.item-card.frozen-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 3px;
+    background: linear-gradient(90deg, #3b82f6, #60a5fa);
+}
+
+/* Slashed Item Card */
+.item-card.slashed-card {
+    border-color: rgba(239, 68, 68, 0.3);
+    opacity: 0.8;
+}
+
+.item-card.slashed-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 3px;
+    background: linear-gradient(90deg, #ef4444, #dc2626);
+}
+
+/* Status badge colors for FROZEN and SLASHED */
+.status-frozen {
+    background: rgba(59, 130, 246, 0.15) !important;
+    color: #60a5fa !important;
+    border: 1px solid rgba(59, 130, 246, 0.3) !important;
+}
+
+.status-slashed {
+    background: rgba(239, 68, 68, 0.15) !important;
+    color: #ef4444 !important;
+    border: 1px solid rgba(239, 68, 68, 0.3) !important;
+}
+
+
+/* =============================================
+   NAVBAR WALLET CONNECTION STYLES
+   ============================================= */
+
+.navbar-wallet {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.wallet-status-nav {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.btn-metamask-nav {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    background: linear-gradient(135deg, #f6851b 0%, #e2761b 100%);
+    border: none;
+    padding: 0.5rem 0.75rem;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.3s;
+    color: #fff;
+    font-weight: 600;
+    font-size: 0.85rem;
+    animation: walletGlow 2s ease-in-out infinite;
+}
+
+@keyframes walletGlow {
+    0%, 100% {
+        box-shadow: 0 0 5px rgba(246, 133, 27, 0.4),
+                    0 0 10px rgba(246, 133, 27, 0.3),
+                    0 0 15px rgba(246, 133, 27, 0.2);
+    }
+    50% {
+        box-shadow: 0 0 10px rgba(246, 133, 27, 0.6),
+                    0 0 20px rgba(246, 133, 27, 0.4),
+                    0 0 30px rgba(246, 133, 27, 0.3);
+    }
+}
+
+.btn-metamask-nav:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 20px rgba(246, 133, 27, 0.5),
+                0 0 30px rgba(246, 133, 27, 0.4);
+    animation: none;
+}
+
+.btn-metamask-nav:active {
+    transform: translateY(0);
+}
+
+.metamask-icon-nav {
+    width: 20px;
+    height: 20px;
+}
+
+.connect-text {
+    color: #fff;
+}
+
+.btn-wallet-address {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    background: rgba(4, 140, 65, 0.429);
+    border: 1px solid rgb(3, 252, 95);
+    padding: 0.5rem 0.75rem;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.3s;
+    animation: walletGlow 2s ease-in-out infinite;
+}
+
+.btn-wallet-address:hover {
+    background: rgb(3, 246, 92);
+    border-color: rgb(2, 253, 94);
+    transform: translateY(-1px);
+}
+
+.btn-wallet-address:active {
+    transform: translateY(0);
+}
+
+.wallet-address-nav {
+    font-family: 'Courier New', monospace;
+    color: #22c55e;
+    font-size: 0.85rem;
+    font-weight: 600;
+}
+
+/* Responsive - hide wallet text on small screens */
+@media (max-width: 768px) {
+    .connect-text {
+        display: none;
+    }
+    
+    .btn-metamask-nav {
+        padding: 0.5rem;
+    }
+    
+    .wallet-address-nav {
+        font-size: 0.75rem;
+    }
+}
+
+
+/* =============================================
+   TOAST NOTIFICATION STYLES
+   ============================================= */
+
+.toast-container {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    z-index: 9999;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    max-width: 400px;
+}
+
+.toast {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 14px 18px;
+    border-radius: 10px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.4);
+    animation: toastSlideIn 0.3s ease-out;
+    min-width: 280px;
+    background: rgba(15, 23, 42, 0.95);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    color: #fff;
+}
+
+.toast.toast-success {
+    border-left: 4px solid #22c55e;
+}
+
+.toast.toast-success .toast-icon {
+    color: #22c55e;
+}
+
+.toast.toast-error {
+    border-left: 4px solid #ef4444;
+}
+
+.toast.toast-error .toast-icon {
+    color: #ef4444;
+}
+
+.toast.toast-warning {
+    border-left: 4px solid #f59e0b;
+}
+
+.toast.toast-warning .toast-icon {
+    color: #f59e0b;
+}
+
+.toast.toast-info {
+    border-left: 4px solid #3b82f6;
+}
+
+.toast.toast-info .toast-icon {
+    color: #3b82f6;
+}
+
+.toast-icon {
+    font-size: 1.25rem;
+    flex-shrink: 0;
+}
+
+.toast-message {
+    flex: 1;
+    font-size: 0.9rem;
+    line-height: 1.4;
+    color: #e5e7eb;
+}
+
+.toast-close {
+    background: none;
+    border: none;
+    color: rgba(255, 255, 255, 0.5);
+    cursor: pointer;
+    padding: 4px;
+    font-size: 1rem;
+    transition: color 0.2s;
+    flex-shrink: 0;
+}
+
+.toast-close:hover {
+    color: #fff;
+}
+
+.toast.toast-hide {
+    animation: toastSlideOut 0.3s ease-in forwards;
+}
+
+@keyframes toastSlideIn {
+    from {
+        transform: translateX(100%);
+        opacity: 0;
+    }
+    to {
+        transform: translateX(0);
+        opacity: 1;
+    }
+}
+
+@keyframes toastSlideOut {
+    from {
+        transform: translateX(0);
+        opacity: 1;
+    }
+    to {
+        transform: translateX(100%);
+        opacity: 0;
+    }
+}
+
+@media (max-width: 480px) {
+    .toast-container {
+        left: 10px;
+        right: 10px;
+        max-width: none;
+    }
+    
+    .toast {
+        min-width: auto;
+    }
+}
+
+
+/* =============================================
+   ITEM AUCTION DETAILS (Card Display)
+   ============================================= */
+
+.item-auction-details {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    margin-top: 0.75rem;
+}
+
+.detail-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.35rem;
+    padding: 0.3rem 0.65rem;
+    background: rgba(255, 255, 255, 0.08);
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    border-radius: 6px;
+    font-size: 0.8rem;
+    color: #9ca3af;
+}
+
+.detail-badge i {
+    font-size: 0.75rem;
+    color: #6b7280;
+}
+
+.detail-badge.bond {
+    background: rgba(16, 185, 129, 0.15);
+    border-color: rgba(16, 185, 129, 0.3);
+    color: #10b981;
+}
+
+.detail-badge.bond i {
+    color: #10b981;
+}
+
+.item-contract-info {
+    margin-top: 0.75rem;
+    padding: 0.5rem 0.75rem;
+    background: rgba(96, 165, 250, 0.08);
+    border: 1px solid rgba(96, 165, 250, 0.2);
+    border-radius: 8px;
+}
+
+.contract-row {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-size: 0.85rem;
+}
+
+.contract-row i {
+    color: #60a5fa;
+    font-size: 0.8rem;
+}
+
+.contract-label {
+    color: #9ca3af;
+}
+
+.contract-link {
+    color: #60a5fa;
+    text-decoration: none;
+    font-family: 'Courier New', monospace;
+    font-size: 0.85rem;
+    transition: color 0.2s;
+}
+
+.contract-link:hover {
+    color: #93c5fd;
+    text-decoration: underline;
+}
+
+/* Bond Status Badge */
+.bond-status-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    margin-top: 0.75rem;
+    padding: 0.5rem 0.75rem;
+    border-radius: 8px;
+    font-size: 0.85rem;
+    font-weight: 500;
+}
+
+.bond-status-badge.deposited {
+    background: rgba(16, 185, 129, 0.15);
+    border: 1px solid rgba(16, 185, 129, 0.3);
+    color: #10b981;
+}
+
+.bond-status-badge.pending {
+    background: rgba(234, 179, 8, 0.15);
+    border: 1px solid rgba(234, 179, 8, 0.3);
+    color: #eab308;
+}
+
+.bond-status-badge.frozen {
+    background: rgba(59, 130, 246, 0.15);
+    border: 1px solid rgba(59, 130, 246, 0.3);
+    color: #3b82f6;
+}
+
+.bond-status-badge.slashed {
+    background: rgba(239, 68, 68, 0.15);
+    border: 1px solid rgba(239, 68, 68, 0.3);
+    color: #ef4444;
+}
+
+/* Card Hint */
+.card-hint {
+    margin-top: 0.75rem;
+    padding-top: 0.75rem;
+    border-top: 1px solid rgba(255, 255, 255, 0.08);
+    font-size: 0.75rem;
+    color: #6b7280;
+    display: flex;
+    align-items: center;
+    gap: 0.35rem;
+}
+
+.card-hint i {
+    font-size: 0.7rem;
+}
+
+/* Sold/Frozen/Slashed Card Styles */
+.item-card.sold-card {
+    border-color: rgba(245, 158, 11, 0.3);
+}
+
+.item-card.frozen-card {
+    border-color: rgba(59, 130, 246, 0.3);
+    background: rgba(59, 130, 246, 0.05);
+}
+
+.item-card.slashed-card {
+    border-color: rgba(239, 68, 68, 0.3);
+    background: rgba(239, 68, 68, 0.05);
+}
+
+/* Status Frozen */
+.status-frozen {
+    background: rgba(59, 130, 246, 0.2);
+    color: #3b82f6;
+}
+
+/* Status Slashed */
+.status-slashed {
+    background: rgba(239, 68, 68, 0.2);
+    color: #ef4444;
+}
+
+
+/* =============================================
+   REFUND TX HASH STYLES
+   ============================================= */
+
+.refund-tx-link {
+    display: block;
+    color: #60a5fa;
+    text-decoration: none;
+    font-family: 'Courier New', monospace;
+    font-size: 1rem;
+    word-break: break-all;
+    line-height: 1.4;
+    font-weight: 600;
+}
+
+.refund-tx-link:hover {
+    color: #93c5fd;
+    text-decoration: underline;
+}
+
+/* =============================================
+   CLICK HINT BOX STYLES
+   ============================================= */
+
+.click-hint-box {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    margin-top: 0.75rem;
+    padding: 0.625rem 0.875rem;
+    background: rgba(59, 130, 246, 0.15);
+    border: 1px solid rgba(59, 130, 246, 0.3);
+    border-radius: 8px;
+    color: #93c5fd;
+    font-size: 0.8rem;
+    font-weight: 500;
+}
+
+.click-hint-box i {
+    color: #60a5fa;
+    font-size: 0.75rem;
+}
+
+
+/* =============================================
+   CLAIM BUTTON STYLES
+   ============================================= */
+
+/* Claim Actions Container */
+.claim-actions {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    margin-top: 1rem;
+    padding-top: 1rem;
+    border-top: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+/* Claim Button */
+.btn-claim {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    width: 100%;
+    padding: 0.875rem 1rem;
+    background: linear-gradient(135deg, #f59e0b, #d97706);
+    color: white;
+    border: none;
+    border-radius: 10px;
+    font-size: 0.95rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 15px rgba(245, 158, 11, 0.3);
+}
+
+.btn-claim:hover {
+    background: linear-gradient(135deg, #d97706, #b45309);
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(245, 158, 11, 0.4);
+}
+
+.btn-claim:active {
+    transform: translateY(0);
+    box-shadow: 0 2px 10px rgba(245, 158, 11, 0.3);
+}
+
+.btn-claim i {
+    font-size: 1rem;
+}
+
+/* Claimed Badge - for items already claimed */
+.claimed-badge {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    width: 100%;
+    padding: 0.75rem 1rem;
+    background: rgba(34, 197, 94, 0.15);
+    color: #22c55e;
+    border: 1px solid rgba(34, 197, 94, 0.3);
+    border-radius: 10px;
+    font-size: 0.9rem;
+    font-weight: 600;
+}
+
+.claimed-badge i {
+    font-size: 1rem;
+}
+
+/* Sold card with claim available */
+.item-card.sold-card:not(.claimed) {
+    border: 2px solid rgba(245, 158, 11, 0.4);
+    box-shadow: 0 0 20px rgba(245, 158, 11, 0.15);
+}
+
+/* Unsold card with claim available */
+.item-card.unsold-card:not(.claimed) {
+    border: 2px solid rgba(239, 68, 68, 0.3);
+}
+
+/* Status for claimed items */
+.status-claimed {
+    background: rgba(34, 197, 94, 0.2);
+    color: #22c55e;
+}
