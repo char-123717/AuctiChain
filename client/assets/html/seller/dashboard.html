@@ -1,0 +1,438 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Seller Dashboard - Auction Platform</title>
+    <link rel="stylesheet" href="/css/base.css">
+    <link rel="stylesheet" href="/css/seller.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Socket.io for real-time updates -->
+    <script src="/socket.io/socket.io.js"></script>
+    <!-- Ethers.js for blockchain interactions -->
+    <script src="https://cdn.jsdelivr.net/npm/ethers@6.9.0/dist/ethers.umd.min.js"></script>
+</head>
+
+<body>
+    <!-- Loading Overlay -->
+    <div id="loadingOverlay" class="loading-overlay">
+        <div class="spinner"></div>
+        <div class="loading-text" id="loadingText">Processing Transaction...</div>
+        <div class="loading-subtext" id="loadingSubtext">Please confirm in MetaMask and wait for confirmation</div>
+    </div>
+
+    <!-- App Container - Flex Layout for Push Sidebar -->
+    <div class="app-container">
+
+        <!-- Sidebar -->
+        <aside id="sidebar" class="sidebar">
+            <div class="sidebar-header">
+                <h3><i class="fas fa-store"></i> Menu</h3>
+            </div>
+            <div class="sidebar-menu">
+                <div class="menu-group">
+                    <a href="#" class="menu-item has-submenu active" data-tab="items" data-status="all">
+                        <i class="fas fa-box"></i> My Items
+                        <i class="fas fa-chevron-down submenu-arrow"></i>
+                    </a>
+                    <div class="submenu">
+                        <a href="#" class="submenu-item" data-tab="items" data-status="PENDING">
+                            <i class="fas fa-clock"></i> Pending
+                            <span class="status-count" id="pendingCount">0</span>
+                        </a>
+                        <a href="#" class="submenu-item" data-tab="items" data-status="APPROVED">
+                            <i class="fas fa-check-circle"></i> Approved
+                            <span class="status-count" id="approvedCount">0</span>
+                        </a>
+                        <a href="#" class="submenu-item" data-tab="items" data-status="LIVE">
+                            <i class="fas fa-broadcast-tower"></i> Live
+                            <span class="status-count live" id="liveCount">0</span>
+                        </a>
+                        <a href="#" class="submenu-item" data-tab="items" data-status="REJECTED">
+                            <i class="fas fa-times-circle"></i> Rejected
+                            <span class="status-count" id="rejectedCount">0</span>
+                        </a>
+                        <a href="#" class="submenu-item" data-tab="items" data-status="SOLD">
+                            <i class="fas fa-trophy"></i> Sold
+                            <span class="status-count sold" id="soldCount">0</span>
+                        </a>
+                        <a href="#" class="submenu-item" data-tab="items" data-status="UNSOLD">
+                            <i class="fas fa-times-circle"></i> Unsold
+                            <span class="status-count unsold" id="unsoldCount">0</span>
+                        </a>
+                        <a href="#" class="submenu-item" data-tab="items" data-status="FROZEN">
+                            <i class="fas fa-snowflake"></i> Frozen
+                            <span class="status-count frozen" id="frozenCount">0</span>
+                        </a>
+                        <a href="#" class="submenu-item" data-tab="items" data-status="SLASHED">
+                            <i class="fas fa-gavel"></i> Slashed
+                            <span class="status-count slashed" id="slashedCount">0</span>
+                        </a>
+                    </div>
+                </div>
+                <a href="#" class="menu-item" data-tab="upload">
+                    <i class="fas fa-upload"></i> Upload Item
+                </a>
+            </div>
+        </aside>
+
+        <!-- Dashboard Content -->
+        <main class="dashboard-content">
+            <!-- Navigation -->
+            <nav class="navbar">
+                <div class="nav-brand">
+                    <button id="sidebarToggle" class="sidebar-toggle" aria-label="Toggle Sidebar">
+                        <i class="fas fa-bars"></i>
+                    </button>
+                    <span>Seller Dashboard</span>
+                </div>
+                <div class="nav-user">
+                    <!-- Wallet Connection Button -->
+                    <div class="navbar-wallet">
+                        <div id="walletNotConnected" class="wallet-status-nav">
+                            <button type="button" id="connectWalletBtn" class="btn-metamask-nav" title="Connect MetaMask">
+                                <img src="https://upload.wikimedia.org/wikipedia/commons/3/36/MetaMask_Fox.svg" alt="MetaMask" class="metamask-icon-nav">
+                                <span class="connect-text">Connect MetaMask</span>
+                            </button>
+                        </div>
+                        <div id="walletConnected" class="wallet-status-nav" style="display: none;">
+                            <button type="button" id="walletAddressBtn" class="btn-wallet-address" title="Click to switch account">
+                                <img src="https://upload.wikimedia.org/wikipedia/commons/3/36/MetaMask_Fox.svg" alt="MetaMask" class="metamask-icon-nav">
+                                <span id="connectedWalletAddress" class="wallet-address-nav"></span>
+                            </button>
+                        </div>
+                        <input type="hidden" id="sellerWallet" value="">
+                    </div>
+                    
+                    <span id="userName">Loading...</span>
+                    <button id="backBtn" class="btn-back">
+                        <i class="fas fa-arrow-left"></i> Back
+                    </button>
+                </div>
+            </nav>
+
+            <div class="main-container">
+                <section id="itemsTab" class="tab-content active">
+                    <div class="section-header">
+                        <h2 id="itemsTabTitle">My Items</h2>
+                        <input type="hidden" id="statusFilter" value="all">
+                    </div>
+                    <div id="itemsList" class="items-grid"></div>
+                    <div id="noItems" class="empty-state" style="display: none;">
+                        <i class="fas fa-box-open"></i>
+                        <p>No items yet. Start by uploading your first item!</p>
+                        <button class="btn-primary" onclick="switchTab('upload')">
+                            <i class="fas fa-plus"></i> Upload Item
+                        </button>
+                    </div>
+                </section>
+
+                <section id="uploadTab" class="tab-content">
+                    <div class="section-header">
+                        <h2 id="uploadTabTitle">Upload New Item</h2>
+                        <button id="cancelResubmit" class="btn-secondary" style="display: none;"
+                            onclick="cancelResubmitMode()">
+                            <i class="fas fa-times"></i> Cancel
+                        </button>
+                    </div>
+
+                    <!-- Rejection Reason Banner (shown when resubmitting) -->
+                    <div id="resubmitBanner" class="resubmit-banner" style="display: none;">
+                        <div class="resubmit-banner-header">
+                            <i class="fas fa-exclamation-triangle"></i>
+                            <span>This item was rejected. Please review and fix the issues below:</span>
+                        </div>
+                        <div class="resubmit-reason">
+                            <strong>Admin's Reason:</strong>
+                            <p id="resubmitReason"></p>
+                        </div>
+                    </div>
+
+                    <form id="uploadForm" class="upload-form upload-form-grid">
+                        <input type="hidden" id="resubmitItemId" value="">
+                        
+                        <!-- Left Column - Bond, Image -->
+                        <div class="upload-form-left">
+                            <!-- Deposit Amount Input -->
+                            <div class="form-group">
+                                <label for="depositAmount">Bond Deposit (ETH) *</label>
+                                <input type="number" id="depositAmount" required step="0.001" min="0.01" placeholder="0.01">
+                                <div class="deposit-note">
+                                    <i class="fas fa-info-circle"></i>
+                                    <div>
+                                        <strong>Bond Deposit:</strong> <br>* This amount will be locked when you click "Start Auction" after admin approval.<br>
+                                        <span class="info-text">* Bond will be returned fully after successful auction, or will not be returned fully if manipulation is detected.</span>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Item Image -->
+                            <div class="form-group">
+                                <label for="itemImage">Item Image *</label>
+                                <div class="image-upload-area" id="imageUploadArea">
+                                    <input type="file" id="itemImage" accept="image/*" hidden>
+                                    <div class="upload-placeholder" id="uploadPlaceholder">
+                                        <i class="fas fa-cloud-upload-alt"></i>
+                                        <p>Click or drag image here</p>
+                                        <span>PNG, JPG, GIF up to 5MB</span>
+                                    </div>
+                                    <img id="imagePreview" class="image-preview" style="display: none;">
+                                </div>
+                                <small id="imageNote" style="display: none; color: #9ca3af;">Leave empty to keep current
+                                    image</small>
+                            </div>
+                        </div>
+
+                        <!-- Right Column - Item Details -->
+                        <div class="upload-form-right">
+                            <div class="form-group">
+                                <label for="itemName">Item Name *</label>
+                                <input type="text" id="itemName" required placeholder="Enter item name">
+                            </div>
+                            <div class="form-group">
+                                <label for="itemDescription">Description *</label>
+                                <textarea id="itemDescription" required
+                                    placeholder="Describe your item... Include size/dimensions (e.g., 10cm x 15cm), condition, and any other important details."
+                                    rows="6"></textarea>
+                            </div>
+                            <div class="form-group">
+                                <label for="startingPrice">Starting Price (ETH) *</label>
+                                <input type="number" id="startingPrice" required step="0.001" min="0.001"
+                                    placeholder="0.001">
+                            </div>
+                            <div class="form-group">
+                                <label for="biddingTime">Auction Duration (minutes) *</label>
+                                <input type="number" id="biddingTime" required min="1" placeholder="e.g., 60 for 1 hour">
+                                <small class="form-hint">Min 1 minute. <br> Max 1440 minutes (24 hours)</small>
+                            </div>
+                            <div id="uploadError" class="error-message" style="display: none;"></div>
+                            <div id="uploadSuccess" class="success-message" style="display: none;"></div>
+                            <button type="submit" id="submitBtn" class="btn-primary btn-full">
+                                <i class="fas fa-paper-plane"></i> Submit for Review
+                            </button>
+                        </div>
+                    </form>
+                </section>
+            </div>
+        </main>
+    </div>
+
+    <!-- Toast Container -->
+    <div id="toastContainer" class="toast-container"></div>
+
+    <div id="editModal" class="modal" style="display: none;">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>Edit Item</h3>
+                <button class="modal-close" onclick="closeEditModal()">&times;</button>
+            </div>
+            <form id="editForm">
+                <input type="hidden" id="editItemId">
+                <div class="form-group">
+                    <label for="editItemName">Item Name *</label>
+                    <input type="text" id="editItemName" required>
+                </div>
+                <div class="form-group">
+                    <label for="editItemDescription">Description *</label>
+                    <textarea id="editItemDescription" required rows="4"></textarea>
+                </div>
+                <div class="form-group">
+                    <label for="editStartingPrice">Starting Price (ETH) *</label>
+                    <input type="number" id="editStartingPrice" required step="0.001" min="0.001">
+                </div>
+                <div class="form-group">
+                    <label>Current Image</label>
+                    <img id="editCurrentImage" class="current-image">
+                </div>
+                <div class="form-group">
+                    <label for="editItemImage">New Image (optional)</label>
+                    <input type="file" id="editItemImage" accept="image/*">
+                </div>
+                <div id="editError" class="error-message" style="display: none;"></div>
+                <div class="modal-actions">
+                    <button type="button" class="btn-secondary" onclick="closeEditModal()">Cancel</button>
+                    <button type="submit" id="editSubmitBtn" class="btn-primary">Save Changes</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <div id="rejectionModal" class="modal" style="display: none;">
+        <div class="modal-content modal-rejection">
+            <div class="modal-header rejection-header">
+                <h3><i class="fas fa-times-circle"></i> Item Rejected</h3>
+                <button class="modal-close" onclick="closeRejectionModal()">&times;</button>
+            </div>
+            <div class="rejection-content">
+                <div class="rejected-item-preview">
+                    <img id="rejectedItemImage" src="" alt="Item">
+                    <h4 id="rejectedItemName"></h4>
+                </div>
+                <div class="rejection-reason-box">
+                    <label><i class="fas fa-comment-alt"></i> Admin's Rejection Reason:</label>
+                    <p id="rejectionReason"></p>
+                </div>
+                <div class="rejection-help">
+                    <i class="fas fa-info-circle"></i>
+                    <span>Please review the feedback above and make necessary changes before resubmitting.</span>
+                </div>
+            </div>
+            <div class="modal-actions">
+                <button class="btn-secondary" onclick="closeRejectionModal()">Close</button>
+                <button class="btn-primary" onclick="resubmitItem()">
+                    <i class="fas fa-edit"></i> Edit & Resubmit
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Item Detail Modal -->
+    <div id="itemDetailModal" class="modal" style="display: none;">
+        <div class="modal-content modal-large">
+            <div class="modal-header">
+                <h3>Item Details</h3>
+                <button class="modal-close" onclick="closeItemDetailModal()">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div class="item-detail-layout">
+                    <div class="item-image-section">
+                        <img id="detailItemImage" src="" alt="Item Image">
+                        
+                        <!-- Auction Info Card - Below Image -->
+                        <div class="auction-info-card" id="detailAuctionInfoCard">
+                            <h5><i class="fas fa-gavel"></i> Auction Info</h5>
+                            <div class="auction-info-grid">
+                                <div class="auction-info-item" id="detailDurationRow">
+                                    <label><i class="fas fa-clock"></i> Duration</label>
+                                    <span id="detailDuration">-</span>
+                                </div>
+                                <div class="auction-info-item" id="detailBondRow">
+                                    <label><i class="fas fa-shield-alt"></i> Bond</label>
+                                    <span id="detailBondAmount" class="bond-value">-</span>
+                                </div>
+                            </div>
+                            <div class="auction-info-item contract-item" id="detailContractRow" style="display: none;">
+                                <label><i class="fas fa-file-contract"></i> Contract Adress</label>
+                                <a id="detailContractAddress" href="#" target="_blank" class="contract-link"></a>
+                            </div>
+                        </div>
+
+                        <!-- Sale Information - positioned below image for SOLD items -->
+                        <div class="sold-info-card" id="detailSoldInfoRow" style="display: none;">
+                            <h5><i class="fas fa-trophy"></i> Sale Information</h5>
+                            <div class="sold-detail-grid">
+                                <div class="sold-detail-item">
+                                    <label>Winner:</label>
+                                    <span id="detailWinner" class="winner-address"></span>
+                                </div>
+                                <div class="sold-detail-item">
+                                    <label>Winning Bid:</label>
+                                    <span id="detailWinningBid" class="winning-bid"></span>
+                                </div>
+                                <div class="sold-detail-item">
+                                    <label>Claim Tx Hash:</label>
+                                    <a id="detailTxHash" href="#" target="_blank" class="tx-link"></a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="item-info-section">
+                        <div class="info-card">
+                            <h4><i class="fas fa-box"></i> Item Information</h4>
+                            <div class="info-row">
+                                <label>Item Name:</label>
+                                <span id="detailItemName" class="item-title"></span>
+                            </div>
+                            <div class="info-row">
+                                <label>Description:</label>
+                                <p id="detailItemDescription" class="description-text"></p>
+                            </div>
+                            <div class="info-row">
+                                <label>Starting Price:</label>
+                                <span id="detailItemPrice" class="price-value"></span>
+                            </div>
+
+                            <div class="info-row">
+                                <label>Status:</label>
+                                <span id="detailItemStatus" class="status-badge"></span>
+                            </div>
+                            <div class="info-row" id="detailRejectReasonRow" style="display: none;">
+                                <label>Reject Reason:</label>
+                                <p id="detailRejectReason" class="reject-reason-text"></p>
+                            </div>
+                            <div class="info-row" id="detailFreezeReasonRow" style="display: none;">
+                                <label>Freeze Reason:</label>
+                                <p id="detailFreezeReason"></p>
+                            </div>
+                            <div class="info-row" id="detailSlashReasonRow" style="display: none;">
+                                <label>Slash Reason:</label>
+                                <p id="detailSlashReason"></p>
+                            </div>
+                            <div class="info-row" id="detailAuctionStartRow" style="display: none;">
+                                <label>Auction Starts on:</label>
+                                <span id="detailAuctionStartTime"></span>
+                            </div>
+                            <div class="info-row" id="detailAuctionEndRow" style="display: none;">
+                                <label>Auction Ends on:</label>
+                                <span id="detailAuctionEndTime"></span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-actions">
+                <button class="btn-secondary" onclick="closeItemDetailModal()">Close</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Deploy Auction Modal -->
+    <div id="deployModal" class="modal" style="display: none;">
+        <div class="modal-content modal-deploy">
+            <div class="modal-header">
+                <h3><i class="fas fa-rocket"></i> Deploy Auction</h3>
+                <button class="modal-close" onclick="closeDeployModal()">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div class="deploy-info">
+                    <div class="deploy-item-preview">
+                        <h4 id="deployItemName"></h4>
+                        <div class="deploy-details">
+                            <div class="deploy-detail-row">
+                                <label>Starting Price:</label>
+                                <span id="deployItemPrice"></span>
+                            </div>
+                            <div class="deploy-detail-row">
+                                <label>Bond Amount:</label>
+                                <span id="deployBondAmount"></span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="deploy-form-group">
+                        <label for="deployBiddingTime">
+                            <i class="fas fa-clock"></i> Auction Duration (minutes)
+                        </label>
+                        <input type="number" id="deployBiddingTime" min="1" placeholder="e.g., 60 for 1 hour" required>
+                        <small class="form-hint">Minimum 1 minute. Recommended: 60-1440 minutes (1-24 hours)</small>
+                    </div>
+                    <div class="deploy-notice">
+                        <i class="fas fa-info-circle"></i>
+                        <p>Deploying will create the auction contract on the blockchain. Your bond will be transferred from escrow to the auction contract. After deployment, the item will be sent to admin for approval.</p>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-actions">
+                <button class="btn-secondary" onclick="closeDeployModal()">Cancel</button>
+                <button id="deployConfirmBtn" class="btn-primary" onclick="deployAuction()">
+                    <i class="fas fa-rocket"></i> Deploy
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script src="/js/auctionContract.js"></script>
+    <script src="/js/seller.js"></script>
+</body>
+
+</html>
