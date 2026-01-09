@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Reset Password - Premium Auction Room</title>
+  <link rel="stylesheet" href="css/base.css">
+  <link rel="stylesheet" href="css/auth.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+</head>
+
+<body>
+  <div class="auth-wrapper">
+    <div class="background-shape"></div>
+    <div class="secondary-shape"></div>
+
+    <!-- Reset Password Panel -->
+    <div class="credentials-panel signin">
+      <div class="alert-container">
+        <div class="alert alert-error" id="errorMsg"></div>
+        <div class="alert alert-success" id="successMsg"></div>
+      </div>
+      <h2 class="slide-element">Set New Password</h2>
+      <form id="resetForm">
+        <div class="warning-box slide-element">
+          ⚠️ <strong>Required:</strong> You must set a new password before continuing to use the platform.
+        </div>
+
+        <div class="field-wrapper slide-element">
+          <input type="password" id="newPassword" required autocomplete="new-password" minlength="8" placeholder=" " />
+          <label for="newPassword">New Password</label>
+          <i class="fa-solid fa-eye password-toggle" data-target="newPassword"></i>
+        </div>
+
+        <div class="field-wrapper slide-element">
+          <input type="password" id="confirmPassword" required autocomplete="new-password" placeholder=" " />
+          <label for="confirmPassword">Confirm New Password</label>
+          <i class="fa-solid fa-eye password-toggle" data-target="confirmPassword"></i>
+        </div>
+
+        <div class="field-wrapper slide-element">
+          <button class="submit-button" type="submit" id="submitBtn">
+            Update Password
+          </button>
+        </div>
+
+        <div class="switch-link slide-element">
+          <p><a href="signin.html" class="login-trigger">Back to Sign In</a></p>
+        </div>
+      </form>
+    </div>
+
+    <!-- Welcome Section with Password Requirements -->
+    <div class="welcome-section signin">
+      <h2 class="slide-element" style="margin-bottom: 2rem;">SECURE YOUR ACCOUNT</h2>
+
+      <div class="password-requirements slide-element" style="text-align: left; max-width: 350px;">
+        <strong>Password must contain:</strong>
+        <ul>
+          <li>At least 8 characters</li>
+          <li>Mix of letters and numbers recommended</li>
+          <li>Must be different from old password</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <script src="js/auth.js"></script>
+  <script>
+    // Handle reset password form
+    document.addEventListener('DOMContentLoaded', () => {
+      const form = document.getElementById('resetForm');
+      const errorMsg = document.getElementById('errorMsg');
+      const successMsg = document.getElementById('successMsg');
+      const submitBtn = document.getElementById('submitBtn');
+
+      // Get token and email from URL
+      const urlParams = new URLSearchParams(window.location.search);
+      const token = urlParams.get('token');
+      const email = urlParams.get('email');
+
+      // Check if we have token (from forgot password link) or user is logged in
+      const authToken = localStorage.getItem('auction_token');
+      const isTokenReset = token && email;
+      const isLoggedInReset = authToken && !isTokenReset;
+
+      if (!isTokenReset && !isLoggedInReset) {
+        // No error message, just disable form
+        submitBtn.disabled = true;
+        return;
+      }
+
+      form.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        hideMessage(errorMsg);
+        hideMessage(successMsg);
+
+        const newPassword = document.getElementById('newPassword')?.value;
+        const confirmPassword = document.getElementById('confirmPassword')?.value;
+
+        if (newPassword !== confirmPassword) {
+          showError(errorMsg, 'Passwords do not match');
+          return;
+        }
+
+        if (newPassword.length < 8) {
+          showError(errorMsg, 'Password must be at least 8 characters');
+          return;
+        }
+
+        submitBtn.disabled = true;
+        submitBtn.textContent = 'Updating...';
+
+        try {
+          let res;
+          
+          if (isTokenReset) {
+            // Reset with token (from forgot password email)
+            res = await fetch('/api/auth/reset-password-with-token', {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({ email, token, newPassword })
+            });
+          } else {
+            // Reset for logged-in user
+            res = await fetch('/api/auth/reset-password', {
+              method: 'POST',
+              headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${authToken}`
+              },
+              body: JSON.stringify({ newPassword })
+            });
+          }
+
+          const data = await res.json();
+
+          if (data.ok) {
+            showSuccess(successMsg, 'Password updated successfully! Redirecting...');
+            setTimeout(() => {
+              window.location.href = '/signin.html';
+            }, 1500);
+          } else {
+            showError(errorMsg, data.error || 'Failed to update password');
+            submitBtn.disabled = false;
+            submitBtn.textContent = 'Update Password';
+          }
+        } catch (err) {
+          showError(errorMsg, 'Connection error. Please try again.');
+          submitBtn.disabled = false;
+          submitBtn.textContent = 'Update Password';
+        }
+      });
+
+      function showError(element, message) {
+        if (!element) return;
+        element.textContent = message;
+        element.style.display = 'block';
+        element.style.color = '#ff8080';
+        setTimeout(() => hideMessage(element), 5000);
+      }
+
+      function showSuccess(element, message) {
+        if (!element) return;
+        element.textContent = message;
+        element.style.display = 'block';
+        element.style.color = '#10b981';
+      }
+
+      function hideMessage(element) {
+        if (element) element.style.display = 'none';
+      }
+    });
+  </script>
+</body>
+
+</html>
