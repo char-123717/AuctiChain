@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Premium Auction Room</title>
+  <link rel="stylesheet" href="css/base.css">
+  <link rel="stylesheet" href="css/auth.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+</head>
+
+<body>
+
+  <!-- Back Button -->
+  <a href="/index.html" class="back-btn">
+    <i class="fas fa-arrow-left"></i> Back
+  </a>
+
+  <div class="auth-wrapper">
+    <div class="background-shape"></div>
+    <div class="secondary-shape"></div>
+
+    <!-- SIGN IN -->
+    <div class="credentials-panel signin">
+      <div class="alert-container">
+        <div class="alert alert-error" id="errorMsg"></div>
+        <div class="alert alert-success" id="successMsg"></div>
+      </div>
+      <h2 class="slide-element">Login</h2>
+      <form id="signinForm">
+        <div class="field-wrapper slide-element">
+          <input type="email" id="email" required autocomplete="email" placeholder=" " />
+          <label for="email">Email</label>
+          <i class="fa-solid fa-envelope"></i>
+        </div>
+
+        <div class="field-wrapper slide-element">
+          <input type="password" id="password" required autocomplete="current-password" placeholder=" " />
+          <label for="password">Password</label>
+          <i class="fa-solid fa-eye password-toggle" data-target="password"></i>
+        </div>
+
+        <div class="forgot-password-wrapper slide-element">
+          <a href="#" class="forgot-trigger">Forgot Password?</a>
+        </div>
+
+        <div class="field-wrapper slide-element">
+          <button class="submit-button" type="submit" id="submitBtn">Login</button>
+        </div>
+
+        <div class="switch-link slide-element">
+          <p>Don't have an account? <br> <a href="#" class="register-trigger">Sign Up</a></p>
+        </div>
+      </form>
+    </div>
+
+    <div class="welcome-section signin">
+      <h2 class="slide-element">WELCOME</h2>
+    </div>
+
+    <!-- SIGN UP -->
+    <div class="credentials-panel signup">
+      <div class="alert-container">
+        <div class="alert alert-error" id="errorMsgSignup"></div>
+        <div class="alert alert-success" id="successMsgSignup"></div>
+      </div>
+      <form id="signupForm">
+        <div class="field-wrapper slide-element">
+          <input type="text" id="name" required autocomplete="name" minlength="2" placeholder=" " />
+          <label for="name">Full Name</label>
+          <i class="fa-solid fa-user"></i>
+        </div>
+
+        <div class="field-wrapper slide-element">
+          <input type="email" id="emailSignup" required autocomplete="email" placeholder=" " />
+          <label for="emailSignup">Email</label>
+          <i class="fa-solid fa-envelope"></i>
+        </div>
+
+        <div class="field-wrapper slide-element">
+          <input type="password" id="passwordSignup" required autocomplete="new-password" minlength="8" placeholder=" " />
+          <label for="passwordSignup">Password</label>
+          <i class="fa-solid fa-eye password-toggle" data-target="passwordSignup"></i>
+        </div>
+
+        <div class="field-wrapper slide-element">
+          <input type="password" id="confirmPassword" required autocomplete="new-password" placeholder=" " />
+          <label for="confirmPassword">Confirm Password</label>
+          <i class="fa-solid fa-eye password-toggle" data-target="confirmPassword"></i>
+        </div>
+
+        <div class="field-wrapper slide-element">
+          <button class="submit-button" type="submit" id="submitBtnSignup">Register</button>
+        </div>
+
+        <div class="switch-link slide-element">
+          <p>Already have an account? <br> <a href="#" class="login-trigger">Sign In</a></p>
+        </div>
+      </form>
+    </div>
+
+    <div class="welcome-section signup">
+      <h2 class="slide-element">REGISTER</h2>
+    </div>
+
+    <!-- FORGOT -->
+    <div class="credentials-panel forgot">
+      <div class="alert-container">
+        <div class="alert alert-error" id="errorMsgForgot"></div>
+        <div class="alert alert-success" id="successMsgForgot"></div>
+      </div>
+      <h2 class="slide-element">Forgot Password</h2>
+      <form id="forgotForm">
+        <div class="info-box slide-element">
+          ℹ️ You'll receive a password reset link via email. Click the link to set a new password.
+        </div>
+
+        <div class="field-wrapper slide-element">
+          <input type="email" id="emailForgot" required autocomplete="email" placeholder=" " />
+          <label for="emailForgot">Email Address</label>
+          <i class="fa-solid fa-envelope"></i>
+        </div>
+
+        <div class="field-wrapper slide-element">
+          <button class="submit-button" type="submit" id="submitBtnForgot">
+            Send Temporary Password
+          </button>
+        </div>
+
+        <div class="switch-link slide-element">
+          <p>Remember your password? <br> <a href="#" class="login-trigger">Sign In</a></p>
+        </div>
+      </form>
+    </div>
+
+    <div class="welcome-section forgot">
+      <h2 class="slide-element">RESET YOUR PASSWORD</h2>
+    </div>
+
+  </div>
+
+  <script src="js/auth.js"></script>
+</body>
+
+</html>
