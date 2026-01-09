@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Choose Your Role - Premium Auction Room</title>
+  <link rel="stylesheet" href="css/base.css">
+  <link rel="stylesheet" href="css/role-select.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+</head>
+
+<body>
+  <!-- Top Navbar with Logout -->
+  <nav class="top-navbar">
+    <div class="nav-brand">
+      <span>Premium Auction Room</span>
+    </div>
+    <button class="btn-logout" onclick="logout()">
+      <i class="fas fa-sign-out-alt"></i> Logout
+    </button>
+  </nav>
+
+  <div class="role-container">
+    <div class="role-header">
+      <h1>🏆 Choose Your Role</h1>
+      <p class="welcome-text">Welcome, <span id="userName">User</span>!</p>
+      <p class="subtitle">Choose how you want to use the platform</p>
+      <p class="subtitle">You can switch roles anytime from your dashboard</p>
+    </div>
+
+    <div class="role-cards">
+      <!-- Seller Card -->
+      <div class="role-card" id="sellerCard" data-role="seller">
+        <div class="role-icon">
+          <i class="fas fa-store"></i>
+        </div>
+        <h2>Seller</h2>
+        <p class="role-description">Upload and sell your items through auctions</p>
+        <ul class="role-features">
+          <li><i class="fas fa-check"></i> Upload items for auction</li>
+          <li><i class="fas fa-check"></i> Set starting prices</li>
+          <li><i class="fas fa-check"></i> Track your listings</li>
+          <li><i class="fas fa-check"></i> Receive payments in ETH</li>
+        </ul>
+        <button class="role-btn seller-btn">
+          <i class="fas fa-arrow-right"></i> Continue as Seller
+        </button>
+      </div>
+
+      <!-- Buyer Card -->
+      <div class="role-card" id="buyerCard" data-role="buyer">
+        <div class="role-icon">
+          <i class="fas fa-shopping-cart"></i>
+        </div>
+        <h2>Buyer</h2>
+        <p class="role-description">Browse items and participate in auctions</p>
+        <ul class="role-features">
+          <li><i class="fas fa-check"></i> Browse approved items</li>
+          <li><i class="fas fa-check"></i> Place bids with MetaMask</li>
+          <li><i class="fas fa-check"></i> Real-time auction updates</li>
+          <li><i class="fas fa-check"></i> Win exclusive items</li>
+        </ul>
+        <button class="role-btn buyer-btn">
+          <i class="fas fa-arrow-right"></i> Continue as Buyer
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <script src="js/role-select.js"></script>
+</body>
+
+</html>
